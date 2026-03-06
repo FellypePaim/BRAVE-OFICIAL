@@ -23,12 +23,15 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useGamification } from "@/hooks/useGamification";
 
 export function AppSidebar() {
   const { signOut, user } = useAuth();
   const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
+  const { xp, level, levelTitle, streak } = useGamification();
+  const gamification = { xp, level, levelTitle, streak };
 
   // Count upcoming active reminders for badge
   const { data: reminderCount = 0 } = useQuery({
