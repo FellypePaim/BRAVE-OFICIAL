@@ -23,6 +23,8 @@ export function useGamification() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const checkedRef = useRef(false);
+  const [pendingAchievement, setPendingAchievement] = useState<any>(null);
+  const [pendingLevelUp, setPendingLevelUp] = useState<{ level: number; title: string } | null>(null);
 
   const { data: gamification } = useQuery({
     queryKey: ["user-gamification", user?.id],
