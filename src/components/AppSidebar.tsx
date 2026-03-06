@@ -164,17 +164,40 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border">
-        {/* User profile */}
+        {/* User profile + gamification */}
         <button
           onClick={() => navigate("/dashboard/settings")}
           className="flex items-center gap-3 px-3 py-3 group-data-[collapsible=icon]:justify-center w-full text-left rounded-lg hover:bg-sidebar-accent/50 transition-colors"
         >
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">
+          <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">
             {displayName.charAt(0).toUpperCase()}
           </div>
-          <div className="group-data-[collapsible=icon]:hidden min-w-0">
+          <div className="group-data-[collapsible=icon]:hidden min-w-0 flex-1">
             <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
             <p className="text-[11px] text-muted-foreground">Ver perfil</p>
+          </div>
+        </button>
+
+        {/* Gamification mini card */}
+        <button
+          onClick={() => navigate("/dashboard/gamification")}
+          className="flex items-center gap-2.5 px-3 py-2 mx-1 mb-1 rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-0 group-data-[collapsible=icon]:px-2"
+        >
+          <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+            <Star className="h-3.5 w-3.5 text-primary" />
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-foreground">Nv. {gamification?.level || 1}</span>
+              <span className="text-[10px] text-primary font-medium">{gamification?.levelTitle || "Iniciante"}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-[10px] text-muted-foreground">{gamification?.xp || 0} XP</span>
+              <div className="flex items-center gap-0.5">
+                <Flame className="h-3 w-3 text-orange-500" />
+                <span className="text-[10px] font-semibold text-foreground">{gamification?.streak || 0}</span>
+              </div>
+            </div>
           </div>
         </button>
         <Button
