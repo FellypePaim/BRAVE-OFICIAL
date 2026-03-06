@@ -484,7 +484,7 @@ export default function Dashboard() {
 
       {/* Alertas */}
       <Card>
-        <CardContent className="p-5">
+        <CardContent className="p-3 md:p-5">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center"><AlertTriangle className="h-4 w-4 text-orange-500" /></div>
             <h3 className="font-semibold text-foreground">Alertas Inteligentes</h3>
