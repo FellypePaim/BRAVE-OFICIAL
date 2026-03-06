@@ -358,7 +358,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-4 flex items-center justify-end gap-3">
+          <CardContent className="p-3 md:p-4 flex items-center justify-end gap-3">
             <div className="text-right">
               <p className="text-xs text-muted-foreground">Humor</p>
               <p className={`text-sm font-semibold ${mood.color}`}>{mood.label}</p>
