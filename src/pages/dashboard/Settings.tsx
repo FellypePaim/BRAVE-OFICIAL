@@ -6,15 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import WhatsAppLinkCard from "@/components/WhatsAppLinkCard";
+import { useGamification } from "@/hooks/useGamification";
+import { motion } from "framer-motion";
 import {
   User, Camera, MessageSquare, Crown, HeadphonesIcon,
   Bell, Mail, Sparkles,
   FileText, Sun, Moon, CheckCircle2, Zap, Star, Lock, Eye, EyeOff,
   CreditCard, CalendarDays, ExternalLink, Loader2,
+  Trophy, Flame, Shield, Wallet, Tags, Receipt, Users as UsersIcon, Award, TrendingUp,
 } from "lucide-react";
+
+const badgeIconMap: Record<string, any> = {
+  trophy: Trophy, flame: Flame, star: Star, zap: Zap,
+  shield: Shield, wallet: Wallet, tags: Tags, receipt: Receipt,
+  users: UsersIcon, award: Award, "fire-extinguisher": Flame,
+  "list-checks": CheckCircle2, "piggy-bank": TrendingUp,
+};
 
 const NOX_PHONE = "5537999385148";
 const NOX_PHONE_DISPLAY = "(37) 9 9938-5148";
