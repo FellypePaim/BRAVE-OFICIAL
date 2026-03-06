@@ -33,6 +33,12 @@ export default function Dashboard() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [period, setPeriod] = useState<Period>("month");
   const [showTour, setShowTour] = useState(false);
+  const { xp, level, levelTitle, streak, bestStreak } = useGamification();
+
+  const LEVEL_XP = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 12000];
+  const currentLevelXp = LEVEL_XP[level - 1] || 0;
+  const nextLevelXp = LEVEL_XP[level] || LEVEL_XP[LEVEL_XP.length - 1] + 5000;
+  const levelProgress = Math.min(((xp - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100, 100);
 
   // Check if user needs onboarding
   const { data: profile } = useQuery({
