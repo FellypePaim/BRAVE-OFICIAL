@@ -114,8 +114,6 @@ export function useGamification() {
     // Grant XP
     await grantXP(achievement.xp_reward);
 
-    // Notify via WhatsApp
-    notifyWhatsApp(user.id, "achievement", achievement.name);
   }, [user, unlockedKeys, achievements, grantXP, queryClient]);
 
   // Auto-check achievements
