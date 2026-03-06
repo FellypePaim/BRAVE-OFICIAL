@@ -153,12 +153,19 @@ async function transcribeAudioPollinations(audioBase64: string, mimeType: string
   const ext = mimeType.includes("ogg") ? "ogg" : mimeType.includes("mp4") ? "m4a" : "mp3";
   const blob = new Blob([bytes], { type: mimeType });
 
+  const apiKey = Deno.env.get("POLLINATIONS_API_KEY");
   const formData = new FormData();
   formData.append("file", blob, `audio.${ext}`);
   formData.append("model", "openai");
 
+  const headers: Record<string, string> = {};
+  if (apiKey) {
+    headers["Authorization"] = `Bearer ${apiKey}`;
+  }
+
   const resp = await fetch(`${POLLINATIONS_BASE}/v1/audio/transcriptions`, {
     method: "POST",
+    headers,
     body: formData,
   });
 
