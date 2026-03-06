@@ -7,7 +7,7 @@ import {
   parseDateTimeBR, nextWD, parseNotifyMinutes, parseRecurrence,
   recurrenceLabel,
 } from "../_shared/whatsapp-utils.ts";
-import { downloadMediaFromUazapi } from "../_shared/whatsapp-media.ts";
+import { downloadMediaFromEvolution as downloadMediaFromUazapi } from "../_shared/whatsapp-media.ts";
 import {
   processWithNoxIA, processImageWithAI, processAudioWithAI,
   parseReminderWithAI,
