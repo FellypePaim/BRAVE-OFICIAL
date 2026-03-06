@@ -48,16 +48,19 @@ serve(async (req) => {
     const chat = body.chat || {};
 
     const phone = chat.number || chat.phone || message.number || message.phone || message.from || message.sender || body.number || body.from;
-    const text = message.body || message.text || message.message || boEvolution API / legacy webhook may use "messageid" (lowercase) in the payload (lowercase) in the payload (lowercase) in the payload payload - confirmed from logs
+    const text = message.body || message.text || message.message || body.text || "";
+    // Evolution API / legacy webhook may use "messageid" (lowercase)
     const messageId = message.messageid || message.id || message.messageId;
     const mediaType = message.mediaType || message.type;
+    const isFromMe = message.fromMe === true || body.data?.key?.fromMe === true;
 
     if (isFromMe) {
       return new Response(JSON.stringify({ ok: true, ignored: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/js });
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-   lick responses from UAZAPI may come with empty text but buttonOrListid set
+    // Button/click responses may come with empty text but buttonOrListid set
     const buttonId = message.buttonOrListid || message.selectedButtonId || message.buttonId || "";
     const isButtonResponse = !!(buttonId) || message.type === "buttonResponse" || message.type === "interactive";
 
@@ -3690,7 +3693,7 @@ Metas financeiras: ${goalsCtx}`;
       await sendWhatsAppMessage(cleanPhone, mediaLabel);
 
       try {
-        const mediaData = await downloadMediaFromUazapi(messageId, mediaType, message);
+        const mediaData = await downloadMediaFromEvolution(messageId, mediaType, message);
 
         if (!mediaData) {
           aiResponse = "😕 Não consegui baixar a mídia. Tente enviar novamente ou descreva por texto!";
