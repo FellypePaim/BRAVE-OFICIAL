@@ -57,6 +57,7 @@ export function AppSidebar() {
     { title: "Metas", url: "/dashboard/goals", icon: Target, badge: 0 },
     { title: "Investimentos", url: "/dashboard/investments", icon: TrendingUp, badge: 0 },
     { title: "Família", url: "/dashboard/family", icon: Users, badge: 0 },
+    { title: "Gamificação", url: "/dashboard/gamification", icon: Trophy, badge: 0 },
     { title: "Comportamento", url: "/dashboard/behavior", icon: Brain, badge: 0 },
     { title: "Relatórios", url: "/dashboard/reports", icon: FileText, badge: 0 },
     { title: "Suporte", url: "/dashboard/chat", icon: HeadphonesIcon, badge: 0 },

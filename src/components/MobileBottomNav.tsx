@@ -27,6 +27,7 @@ const moreItems = [
   { to: "/dashboard/goals", icon: Target, label: "Metas" },
   { to: "/dashboard/investments", icon: TrendingUp, label: "Investimentos" },
   { to: "/dashboard/family", icon: Users, label: "Família" },
+  { to: "/dashboard/gamification", icon: Trophy, label: "Gamificação" },
   { to: "/dashboard/behavior", icon: Brain, label: "Comportamento" },
   { to: "/dashboard/reports", icon: FileText, label: "Relatórios" },
   { to: "/dashboard/chat", icon: HeadphonesIcon, label: "Suporte" },

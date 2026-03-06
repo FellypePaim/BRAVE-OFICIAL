@@ -104,6 +104,7 @@ const App = () => (
               <Route path="admin/users" element={<AdminUsers />} />
               <Route path="brave-ia" element={<NyloChat />} />
               <Route path="reminders" element={<Reminders />} />
+              <Route path="gamification" element={<Gamification />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
