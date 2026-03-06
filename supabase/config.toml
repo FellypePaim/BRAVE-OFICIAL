@@ -1,0 +1,46 @@
+project_id = "ljbsxehdiskqggpssuay"
+
+[functions.customer-portal]
+verify_jwt = false
+
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.nylo-chat]
+verify_jwt = false
+
+[functions.generate-recurring-bills]
+verify_jwt = false
+
+[functions.whatsapp-webhook]
+verify_jwt = false
+
+[functions.whatsapp-notify]
+verify_jwt = false
+
+[functions.market-data]
+verify_jwt = false
+
+[functions.notify-plan-change]
+verify_jwt = false
+
+[functions.check-expired-plans]
+verify_jwt = false
+
+[functions.admin-update-user]
+verify_jwt = false
+
+[functions.whatsapp-bills-reminder]
+verify_jwt = false
+
+[functions.send-reminders]
+verify_jwt = false
+
+[functions.whatsapp-weekly-report]
+verify_jwt = false
+
+[functions.whatsapp-budget-alert]
+verify_jwt = false
