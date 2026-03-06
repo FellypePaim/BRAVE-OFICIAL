@@ -164,7 +164,10 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-border">
         {/* User profile */}
-        <div className="flex items-center gap-3 px-3 py-3 group-data-[collapsible=icon]:justify-center">
+        <button
+          onClick={() => navigate("/dashboard/settings")}
+          className="flex items-center gap-3 px-3 py-3 group-data-[collapsible=icon]:justify-center w-full text-left rounded-lg hover:bg-sidebar-accent/50 transition-colors"
+        >
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">
             {displayName.charAt(0).toUpperCase()}
           </div>
@@ -172,7 +175,7 @@ export function AppSidebar() {
             <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
             <p className="text-[11px] text-muted-foreground">Ver perfil</p>
           </div>
-        </div>
+        </button>
         <Button
           variant="ghost"
           size="sm"
