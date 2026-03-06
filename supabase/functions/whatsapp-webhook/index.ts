@@ -7,7 +7,7 @@ import {
   parseDateTimeBR, nextWD, parseNotifyMinutes, parseRecurrence,
   recurrenceLabel,
 } from "../_shared/whatsapp-utils.ts";
-import { downloadMediaFromEvolution as downloadMediaFromUazapi } from "../_shared/whatsapp-media.ts";
+import { downloadMediaFromEvolution as downloadMediaFromEvolution as downloadMediaFromUazapi } from "../_shared/whatsapp-media.ts";
 import {
   processWithNoxIA, processImageWithAI, processAudioWithAI,
   parseReminderWithAI,
@@ -49,8 +49,7 @@ serve(async (req) => {
 
     const phone = chat.number || chat.phone || message.number || message.phone || message.from || message.sender || body.number || body.from;
     const text = message.body || message.text || message.message || body.body || body.text;
-    const isFromMe = message.fromMe || body.fromMe || false;
-    // UAZAPI uses "messageid" (lowercase) in the webhook payload - confirmed from logs
+    const isFromMe = message.fromMe ||Evolution API / legacy webhook may use "messageid" (lowercase) in the payload payload - confirmed from logs
     const messageId = message.messageid || message.id || message.messageId;
     const mediaType = message.mediaType || message.type;
 
