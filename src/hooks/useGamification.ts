@@ -1,8 +1,7 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 const LEVEL_XP = [0, 100, 250, 500, 1000, 2000, 3500, 5500, 8000, 12000];
 
@@ -24,6 +23,8 @@ export function useGamification() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const checkedRef = useRef(false);
+  const [pendingAchievement, setPendingAchievement] = useState<any>(null);
+  const [pendingLevelUp, setPendingLevelUp] = useState<{ level: number; title: string } | null>(null);
 
   const { data: gamification } = useQuery({
     queryKey: ["user-gamification", user?.id],
@@ -87,8 +88,7 @@ export function useGamification() {
     queryClient.invalidateQueries({ queryKey: ["user-gamification"] });
 
     if (newLevel > oldLevel) {
-      toast.success(`🎉 Subiu para Nível ${newLevel}: ${levelTitles[newLevel - 1]}!`, { duration: 5000 });
-      // Notify via WhatsApp
+      setPendingLevelUp({ level: newLevel, title: levelTitles[newLevel - 1] });
       notifyWhatsApp(user.id, `level_up`, `Nível ${newLevel}: ${levelTitles[newLevel - 1]}`);
     }
   }, [user, gamification, queryClient]);
@@ -109,7 +109,7 @@ export function useGamification() {
       return;
     }
 
-    toast.success(`🏆 Conquista desbloqueada: ${achievement.name}!`, { duration: 5000 });
+    setPendingAchievement(achievement);
     queryClient.invalidateQueries({ queryKey: ["user-achievements"] });
 
     // Grant XP
@@ -267,6 +267,10 @@ export function useGamification() {
     levelTitle: levelTitles[getLevel(gamification?.xp || 0) - 1] || "Lenda",
     streak: gamification?.streak_current || 0,
     bestStreak: gamification?.streak_best || 0,
+    pendingAchievement,
+    clearPendingAchievement: () => setPendingAchievement(null),
+    pendingLevelUp,
+    clearPendingLevelUp: () => setPendingLevelUp(null),
   };
 }
 
