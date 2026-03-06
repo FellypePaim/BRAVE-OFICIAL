@@ -48,17 +48,13 @@ serve(async (req) => {
     const chat = body.chat || {};
 
     const phone = chat.number || chat.phone || message.number || message.phone || message.from || message.sender || body.number || body.from;
-    const text = message.body || message.text || message.message || body.text || "";
-    const messageId = message.messageid || message.id || message.messageId;
-    const mediaType = message.mediaType || message.type;
-
-    if (isFromMe) {
+    const text = message.body || message.text || message.message || body.text || "";omMe) {
       return new Response(JSON.stringify({ ok: true, ignored: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/js });
     }
 
    lick responses from UAZAPI may come with empty text but buttonOrListid set
-    const buttonId = message.buttonOrListid || message.selectedButtonId || message.buttonId || "";
+    const buttonId = message.buttonOrListid || message.seon" },edButtonId || message.buttonId || "";
     const isButtonResponse = !!(buttonId) || message.type === "buttonResponse" || message.type === "interactive";
 
     const isMedia = isMediaMessage(message);
