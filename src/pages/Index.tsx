@@ -691,7 +691,7 @@ function Benefits() {
                 <motion.div
                   key={i}
                   variants={fadeUp}
-                  className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                  className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm p-4 hover:bg-white/[0.06] hover:-translate-y-0.5 transition-all duration-200"
                 >
                   <div className="flex-shrink-0 h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     <b.icon className="h-5 w-5" />
