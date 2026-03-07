@@ -225,7 +225,7 @@ function Hero({ onOpenAuth }: { onOpenAuth: () => void }) {
 /* ─── O QUE É ─── */
 function WhatIs() {
   return (
-    <section id="o-que-e" className="py-16 md:py-24 bg-secondary/30">
+    <section id="o-que-e" className="py-16 md:py-24 bg-white/[0.02]">
       <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger} className="container mx-auto px-4 max-w-3xl text-center">
         <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-foreground">
           O que é o Brave Assessor?
