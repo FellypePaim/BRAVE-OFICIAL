@@ -14,14 +14,23 @@ const PLAN_CONFIG: Record<string, { value: number; cycle: string; description: s
   anual: { value: 178.80, cycle: "YEARLY", description: "Brave Assessor - Plano Anual", days: 365 },
 };
 
-async function findOrCreateCustomer(asaasKey: string, user: any): Promise<string> {
+async function findOrCreateCustomer(asaasKey: string, user: any, cpfCnpj?: string): Promise<string> {
   const searchRes = await fetch(`${ASAAS_API}/customers?email=${encodeURIComponent(user.email!)}`, {
     headers: { "access_token": asaasKey },
   });
   const searchData = await searchRes.json();
 
   if (searchData.data && searchData.data.length > 0) {
-    return searchData.data[0].id;
+    const existing = searchData.data[0];
+    // Update cpfCnpj if provided and not already set
+    if (cpfCnpj && !existing.cpfCnpj) {
+      await fetch(`${ASAAS_API}/customers/${existing.id}`, {
+        method: "PUT",
+        headers: { "access_token": asaasKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ cpfCnpj }),
+      });
+    }
+    return existing.id;
   }
 
   const createRes = await fetch(`${ASAAS_API}/customers`, {
@@ -30,6 +39,7 @@ async function findOrCreateCustomer(asaasKey: string, user: any): Promise<string
     body: JSON.stringify({
       name: user.user_metadata?.display_name || user.email!.split("@")[0],
       email: user.email,
+      cpfCnpj: cpfCnpj || undefined,
       externalReference: user.id,
     }),
   });
