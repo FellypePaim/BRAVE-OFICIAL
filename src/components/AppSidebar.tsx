@@ -32,6 +32,20 @@ export function AppSidebar() {
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
   const { xp, level, levelTitle, streak } = useGamification();
 
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url, display_name")
+        .eq("id", user!.id)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+  const avatarUrl = profile?.avatar_url;
+
   const { data: reminderCount = 0 } = useQuery({
     queryKey: ["reminders-count", user?.id],
     queryFn: async () => {
