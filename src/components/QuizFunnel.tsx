@@ -678,7 +678,7 @@ function ClientCheck({ onExisting, onNew }: { onExisting: () => void; onNew: () 
             onClick={onNew}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border-2 border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] transition-all duration-300"
           >
             <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
               <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-emerald-500" />
