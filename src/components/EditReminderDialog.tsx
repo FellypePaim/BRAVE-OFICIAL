@@ -77,12 +77,20 @@ export function EditReminderDialog({ reminder, open, onOpenChange }: Props) {
 
   useEffect(() => {
     if (reminder) {
+      const isStandard = NOTIFY_OPTIONS.some(o => o.value === reminder.notify_minutes_before && o.value !== -1);
+      const eventDate = new Date(reminder.event_at);
+      let customTime = "";
+      if (!isStandard) {
+        const notifyAt = new Date(eventDate.getTime() - reminder.notify_minutes_before * 60000);
+        customTime = `${String(notifyAt.getHours()).padStart(2, "0")}:${String(notifyAt.getMinutes()).padStart(2, "0")}`;
+      }
       setForm({
         title: reminder.title,
         description: reminder.description || "",
         event_date: toLocalDate(reminder.event_at),
         event_time: toLocalTime(reminder.event_at),
-        notify_minutes_before: String(reminder.notify_minutes_before),
+        notify_minutes_before: isStandard ? String(reminder.notify_minutes_before) : "-1",
+        custom_notify_time: customTime,
         recurrence: reminder.recurrence,
       });
     }
