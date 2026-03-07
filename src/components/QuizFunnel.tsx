@@ -97,15 +97,17 @@ function AnimatedBackground() {
   if (prefersReduced) {
     return (
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/10" />
+        <div className="absolute inset-0 bg-background" />
+        <div className="absolute top-[20%] left-[10%] w-96 h-96 rounded-full bg-primary/[0.06] blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-blue-500/[0.05] blur-[100px]" />
       </div>
     );
   }
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Base gradient mesh */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/10" />
+      {/* Dark base */}
+      <div className="absolute inset-0 bg-background" />
 
       {/* Animated gradient blobs — CSS animations on mobile for GPU compositing */}
       {blobs.map((blob) => (
@@ -220,7 +222,7 @@ function ThemePicker({ onChoose }: { onChoose: (theme: "light" | "dark") => void
             onClick={() => onChoose("light")}
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="group relative flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-3xl border-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            className="group relative flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-3xl border-2 border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] transition-all duration-300"
           >
             <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-2xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center group-hover:bg-amber-100 dark:group-hover:bg-amber-900/40 transition-colors">
               <Sun className="h-6 w-6 sm:h-8 sm:w-8 text-amber-500" />
@@ -233,7 +235,7 @@ function ThemePicker({ onChoose }: { onChoose: (theme: "light" | "dark") => void
             onClick={() => onChoose("dark")}
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="group relative flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-3xl border-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            className="group relative flex flex-col items-center gap-2 sm:gap-3 p-4 sm:p-6 rounded-3xl border-2 border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] transition-all duration-300"
           >
             <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 flex items-center justify-center group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 transition-colors">
               <Moon className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-500" />
@@ -266,7 +268,7 @@ function HookToast({ hook }: { hook: { emoji: string; text: string; sub: string 
       transition={{ duration: 0.4, ease: easeOut }}
       className="fixed bottom-20 sm:bottom-6 left-4 right-4 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-50 sm:max-w-sm sm:w-auto"
     >
-      <div className="flex items-center gap-3 rounded-2xl border border-border bg-card/95 p-3 sm:p-4 shadow-xl shadow-primary/5 sm:backdrop-blur-xl">
+      <div className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.04] backdrop-blur-xl p-3 sm:p-4 shadow-xl shadow-primary/5">
         <span className="text-2xl sm:text-3xl shrink-0">{hook.emoji}</span>
         <div className="min-w-0 flex-1">
           <p className="text-xs sm:text-sm font-semibold text-foreground leading-snug break-words">{hook.text}</p>
@@ -336,8 +338,8 @@ function OptionCard({
       onClick={onClick}
       className={`w-full text-left p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 ${
         selected
-          ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
-          : "border-border bg-card/80 hover:border-primary/30 hover:shadow-sm"
+          ? "border-primary bg-primary/10 shadow-md shadow-primary/10"
+          : "border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:border-primary/30 hover:bg-white/[0.06]"
       }`}
       whileTap={{ scale: 0.97 }}
     >
@@ -387,7 +389,7 @@ function FeatureShowcase({ onContinue }: { onContinue: () => void }) {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            className="flex items-start gap-3 p-3 sm:p-4 rounded-2xl border border-border bg-card/80 hover:border-primary/30 transition-colors"
+            className="flex items-start gap-3 p-3 sm:p-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:bg-white/[0.06] transition-colors"
           >
             <div className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-xl ${feat.bg} flex items-center justify-center ${feat.color}`}>
               <feat.icon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -474,7 +476,7 @@ function HowWeHelp({ answers, onContinue }: { answers: QuizAnswers; onContinue: 
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            className="flex items-start gap-3 p-3 sm:p-4 rounded-2xl border border-border bg-card/80"
+            className="flex items-start gap-3 p-3 sm:p-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm"
           >
             <div className="flex-shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
               <sol.icon className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -554,7 +556,7 @@ function QuizResult({ answers, onOpenAuth }: { answers: QuizAnswers; onOpenAuth:
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 + i * 0.1, duration: 0.4 }}
-            className="flex items-center gap-3 p-3 rounded-xl bg-card/80 border border-border"
+            className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm"
           >
             <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <item.icon className="h-4 w-4" />
@@ -570,15 +572,15 @@ function QuizResult({ answers, onOpenAuth }: { answers: QuizAnswers; onOpenAuth:
         transition={{ delay: 0.9, duration: 0.5 }}
         className="mt-5 sm:mt-6 flex flex-wrap justify-center gap-2 sm:gap-3"
       >
-        <div className="flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1.5 text-[10px] sm:text-xs shadow-sm">
+        <div className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-3 py-1.5 text-[10px] sm:text-xs">
           <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
           <span className="font-semibold text-foreground">+2.000 usuários</span>
         </div>
-        <div className="flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1.5 text-[10px] sm:text-xs shadow-sm">
+        <div className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-3 py-1.5 text-[10px] sm:text-xs">
           <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-amber-500 fill-amber-500" />
           <span className="font-semibold text-foreground">4.9 estrelas</span>
         </div>
-        <div className="flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1.5 text-[10px] sm:text-xs shadow-sm">
+        <div className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-3 py-1.5 text-[10px] sm:text-xs">
           <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
           <span className="font-semibold text-foreground">100% seguro</span>
         </div>
@@ -660,7 +662,7 @@ function ClientCheck({ onExisting, onNew }: { onExisting: () => void; onNew: () 
             onClick={() => navigate("/login")}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border-2 border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] transition-all duration-300"
           >
             <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
               <User className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
@@ -676,7 +678,7 @@ function ClientCheck({ onExisting, onNew }: { onExisting: () => void; onNew: () 
             onClick={onNew}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border-2 border-border bg-card hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border-2 border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:border-primary/50 hover:bg-white/[0.06] transition-all duration-300"
           >
             <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
               <Sparkles className="h-6 w-6 sm:h-7 sm:w-7 text-emerald-500" />
@@ -780,7 +782,7 @@ export default function QuizFunnel({ onOpenAuth }: { onOpenAuth: () => void }) {
       </AnimatePresence>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 sm:bg-background/60 sm:backdrop-blur-xl border-b border-border/50">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="container mx-auto flex items-center justify-between h-14 px-4">
           <a href="#" className="flex items-center gap-2 font-bold text-base sm:text-lg text-foreground">
             <img src={braveIconImg} alt="Brave Assessor" className="w-9 h-9 rounded-lg object-contain" />
@@ -975,7 +977,7 @@ export default function QuizFunnel({ onOpenAuth }: { onOpenAuth: () => void }) {
 
       {/* Footer */}
       {!showThemePicker && !showClientCheck && (
-        <footer className="py-4 text-center border-t border-border/50 relative z-10 bg-background/90 sm:bg-background/60 sm:backdrop-blur-sm">
+        <footer className="py-4 text-center border-t border-white/[0.06] relative z-10 bg-background/60 backdrop-blur-sm">
           <p className="text-[10px] sm:text-xs text-muted-foreground">
             © 2026 Brave Assessor · Hubflows Tecnologia Ltda
           </p>
