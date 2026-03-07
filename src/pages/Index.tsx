@@ -490,7 +490,7 @@ function FAQ() {
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="mt-10">
           <Accordion type="single" collapsible className="space-y-2">
             {faqs.map((f, i) => (
-              <AccordionItem key={i} value={`faq-${i}`} className="border border-border rounded-xl px-4 bg-card">
+              <AccordionItem key={i} value={`faq-${i}`} className="border border-white/[0.08] rounded-xl px-4 bg-white/[0.03] backdrop-blur-sm">
                 <AccordionTrigger className="text-left text-foreground hover:no-underline">
                   {f.q}
                 </AccordionTrigger>
