@@ -213,9 +213,14 @@ export default function Reports() {
           <h1 className="text-lg md:text-2xl font-bold text-foreground">Relatórios</h1>
           <p className="text-muted-foreground text-xs md:text-sm">Análises das suas finanças</p>
         </div>
-        <Button variant="outline" size="sm" className="rounded-full gap-1 text-xs h-8 px-3" onClick={handleExportCSV}>
-          <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="rounded-full gap-1 text-xs h-8 px-3" onClick={handleExportCSV}>
+            <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
+          </Button>
+          <Button variant="outline" size="sm" className="rounded-full gap-1 text-xs h-8 px-3" onClick={handleExportPDF}>
+            <FileText className="h-3.5 w-3.5" /> PDF
+          </Button>
+        </div>
       </div>
 
       {/* Period Selection */}
