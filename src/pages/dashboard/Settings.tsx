@@ -136,6 +136,7 @@ export default function Settings() {
         .maybeSingle();
       if (data) {
         setDisplayName(data.display_name || "");
+        setCpfCnpj((data as any).cpf_cnpj || "");
         setMonthlyIncome(data.monthly_income?.toString() || "");
         setAvatarUrl(data.avatar_url);
         setPlan(data.subscription_plan || "free");
