@@ -71,6 +71,7 @@ export function EditReminderDialog({ reminder, open, onOpenChange }: Props) {
     event_date: "",
     event_time: "",
     notify_minutes_before: "30",
+    custom_notify_time: "",
     recurrence: "none",
   });
 
