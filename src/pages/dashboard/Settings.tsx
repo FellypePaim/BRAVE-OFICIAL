@@ -872,5 +872,17 @@ export default function Settings() {
         </div>
       </Card>
     </div>
+
+      {checkoutPlan && (
+        <CheckoutDialog
+          open={!!checkoutPlan}
+          onOpenChange={(open) => !open && setCheckoutPlan(null)}
+          plan={checkoutPlan}
+          planName={getCheckoutDetails().name}
+          planPrice={getCheckoutDetails().price}
+          planValue={getCheckoutDetails().value}
+        />
+      )}
+    </>
   );
 }
