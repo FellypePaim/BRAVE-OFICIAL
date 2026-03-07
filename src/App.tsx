@@ -115,6 +115,6 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
   </PWASplashScreen>
-);
+  </ThemeProvider>
 
 export default App;
