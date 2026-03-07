@@ -164,10 +164,10 @@ export default function DesignPreview() {
 }
 
 /* ── Helpers ── */
-const cardStyle = (tk: typeof t2, glass: boolean): React.CSSProperties => ({
-  background: tk.bgCard,
+const cardStyle = (tk: typeof t2, glass: boolean, neo?: boolean): React.CSSProperties => ({
+  background: neo ? "#161616" : tk.bgCard,
   borderRadius: tk.radius,
-  border: `1px solid ${glass ? (tk as typeof t2).bgCardBorder || tk.border : tk.border}`,
+  border: neo ? "none" : `1px solid ${glass ? (tk as typeof t2).bgCardBorder || tk.border : tk.border}`,
   ...(glass ? { backdropFilter: t2.blur, boxShadow: t2.glowCard } : {}),
 });
 
