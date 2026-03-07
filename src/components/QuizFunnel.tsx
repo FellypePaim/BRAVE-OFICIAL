@@ -97,7 +97,9 @@ function AnimatedBackground() {
   if (prefersReduced) {
     return (
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/10" />
+        <div className="absolute inset-0 bg-background" />
+        <div className="absolute top-[20%] left-[10%] w-96 h-96 rounded-full bg-primary/[0.06] blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[10%] w-80 h-80 rounded-full bg-blue-500/[0.05] blur-[100px]" />
       </div>
     );
   }
