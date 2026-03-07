@@ -37,6 +37,7 @@ const NOTIFY_OPTIONS = [
   { label: "6 horas antes", value: 360 },
   { label: "12 horas antes", value: 720 },
   { label: "1 dia antes", value: 1440 },
+  { label: "Horário exato (personalizado)", value: -1 },
 ];
 
 const RECURRENCE_OPTIONS = [
@@ -70,17 +71,26 @@ export function EditReminderDialog({ reminder, open, onOpenChange }: Props) {
     event_date: "",
     event_time: "",
     notify_minutes_before: "30",
+    custom_notify_time: "",
     recurrence: "none",
   });
 
   useEffect(() => {
     if (reminder) {
+      const isStandard = NOTIFY_OPTIONS.some(o => o.value === reminder.notify_minutes_before && o.value !== -1);
+      const eventDate = new Date(reminder.event_at);
+      let customTime = "";
+      if (!isStandard) {
+        const notifyAt = new Date(eventDate.getTime() - reminder.notify_minutes_before * 60000);
+        customTime = `${String(notifyAt.getHours()).padStart(2, "0")}:${String(notifyAt.getMinutes()).padStart(2, "0")}`;
+      }
       setForm({
         title: reminder.title,
         description: reminder.description || "",
         event_date: toLocalDate(reminder.event_at),
         event_time: toLocalTime(reminder.event_at),
-        notify_minutes_before: String(reminder.notify_minutes_before),
+        notify_minutes_before: isStandard ? String(reminder.notify_minutes_before) : "-1",
+        custom_notify_time: customTime,
         recurrence: reminder.recurrence,
       });
     }
@@ -93,12 +103,20 @@ export function EditReminderDialog({ reminder, open, onOpenChange }: Props) {
       }
       if (!reminder) throw new Error("Nenhum lembrete selecionado");
 
-      const event_at = new Date(`${form.event_date}T${form.event_time}`).toISOString();
+      const eventDate = new Date(`${form.event_date}T${form.event_time}`);
+      let notifyMinutes = Number(form.notify_minutes_before);
+      if (notifyMinutes === -1) {
+        if (!form.custom_notify_time) throw new Error("Informe o horário da notificação");
+        const notifyDate = new Date(`${form.event_date}T${form.custom_notify_time}`);
+        notifyMinutes = Math.max(0, Math.round((eventDate.getTime() - notifyDate.getTime()) / 60000));
+        if (notifyMinutes <= 0) throw new Error("O horário da notificação deve ser antes do evento");
+      }
+      const event_at = eventDate.toISOString();
       const { error } = await supabase.from("reminders").update({
         title: form.title,
         description: form.description || null,
         event_at,
-        notify_minutes_before: Number(form.notify_minutes_before),
+        notify_minutes_before: notifyMinutes,
         recurrence: form.recurrence,
         is_sent: false,
       }).eq("id", reminder.id);
@@ -185,6 +203,21 @@ export function EditReminderDialog({ reminder, open, onOpenChange }: Props) {
                 ))}
               </SelectContent>
             </Select>
+              {form.notify_minutes_before === "-1" && (
+                <div className="space-y-1.5 mt-2">
+                  <Label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3" /> Horário exato da notificação
+                  </Label>
+                  <Input
+                    type="time"
+                    value={form.custom_notify_time}
+                    onChange={e => setForm(f => ({ ...f, custom_notify_time: e.target.value }))}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Será enviado neste horário no mesmo dia do evento
+                  </p>
+                </div>
+              )}
           </div>
 
           <div className="space-y-2">
