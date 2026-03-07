@@ -165,7 +165,7 @@ export default function Settings() {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("support-attachments").getPublicUrl(path);
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
     const url = urlData.publicUrl;
 
     await supabase.from("profiles").update({ avatar_url: url }).eq("id", user.id);
