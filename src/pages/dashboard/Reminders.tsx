@@ -49,6 +49,7 @@ const NOTIFY_OPTIONS = [
   { label: "6 horas antes", value: 360 },
   { label: "12 horas antes", value: 720 },
   { label: "1 dia antes", value: 1440 },
+  { label: "Horário exato (personalizado)", value: -1 },
 ];
 
 const RECURRENCE_OPTIONS = [
