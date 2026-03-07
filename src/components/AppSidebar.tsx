@@ -22,7 +22,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+
 import { useGamification } from "@/hooks/useGamification";
 
 export function AppSidebar() {
