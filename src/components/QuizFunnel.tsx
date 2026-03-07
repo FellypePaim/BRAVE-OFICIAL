@@ -782,7 +782,7 @@ export default function QuizFunnel({ onOpenAuth }: { onOpenAuth: () => void }) {
       </AnimatePresence>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 sm:bg-background/60 sm:backdrop-blur-xl border-b border-border/50">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="container mx-auto flex items-center justify-between h-14 px-4">
           <a href="#" className="flex items-center gap-2 font-bold text-base sm:text-lg text-foreground">
             <img src={braveIconImg} alt="Brave Assessor" className="w-9 h-9 rounded-lg object-contain" />
