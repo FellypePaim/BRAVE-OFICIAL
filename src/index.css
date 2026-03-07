@@ -130,3 +130,59 @@
     font-family: 'Inter', sans-serif;
   }
 }
+
+/* Glassmorphism utility classes */
+.glass-card {
+  background: hsl(var(--glass-bg));
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid hsl(var(--glass-border));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-solid {
+  background: hsl(var(--card));
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid hsl(var(--glass-border));
+}
+
+.glass-sidebar {
+  background: hsl(240 24% 6% / 0.85);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-right: 1px solid hsl(var(--glass-border));
+}
+
+.glass-bottomnav {
+  background: hsl(240 20% 5% / 0.75);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-top: 1px solid hsl(var(--glass-border));
+}
+
+.glow-primary {
+  box-shadow: 0 0 20px hsl(4 80% 54% / 0.25);
+}
+
+.glow-primary-sm {
+  box-shadow: 0 0 12px hsl(4 80% 54% / 0.15);
+}
+
+/* Background orbs */
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(60px);
+  z-index: 0;
+}
+.bg-orb-primary {
+  background: radial-gradient(circle, hsl(4 80% 54% / 0.08) 0%, transparent 70%);
+}
+.bg-orb-blue {
+  background: radial-gradient(circle, hsl(217 91% 60% / 0.06) 0%, transparent 70%);
+}
+.bg-orb-purple {
+  background: radial-gradient(circle, hsl(263 70% 50% / 0.05) 0%, transparent 70%);
+}
