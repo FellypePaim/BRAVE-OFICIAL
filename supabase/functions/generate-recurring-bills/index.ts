@@ -116,6 +116,23 @@ Deno.serve(async (req) => {
 
         if (!waLink?.phone_number) continue;
 
+        // Fetch monthly summary: paid vs pending
+        const monthStart = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+        const monthEnd = `${year}-${String(month + 1).padStart(2, "0")}-${new Date(year, month + 1, 0).getDate()}`;
+
+        const { data: allMonthTx } = await supabase
+          .from("transactions")
+          .select("amount, is_paid")
+          .eq("user_id", userId)
+          .gte("due_date", monthStart)
+          .lte("due_date", monthEnd);
+
+        const paid = (allMonthTx || []).filter((t: any) => t.is_paid);
+        const pending = (allMonthTx || []).filter((t: any) => !t.is_paid);
+        const paidTotal = paid.reduce((s: number, t: any) => s + Number(t.amount || 0), 0);
+        const pendingTotal = pending.reduce((s: number, t: any) => s + Number(t.amount || 0), 0);
+        const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
         const name = profile?.display_name || "Usuário";
         const billsList = userBills[userId].bills.join("\n");
         const monthName = now.toLocaleDateString("pt-BR", { month: "long" });
@@ -123,9 +140,13 @@ Deno.serve(async (req) => {
         const message = [
           `📋 *${name}*, suas contas de ${monthName} foram geradas!`,
           ``,
-          `${billsList}`,
+          billsList,
           ``,
-          `📊 Total: *${userBills[userId].bills.length} conta(s)* criada(s)`,
+          `📊 *Resumo do mês:*`,
+          `✅ Pagas: ${paid.length} conta(s) — ${fmt(paidTotal)}`,
+          `⏳ Pendentes: ${pending.length} conta(s) — ${fmt(pendingTotal)}`,
+          `💰 Total: ${fmt(paidTotal + pendingTotal)}`,
+          ``,
           `💡 Acesse o app para gerenciar seus pagamentos.`,
           `_Brave IA 🤖_`,
         ].join("\n");
