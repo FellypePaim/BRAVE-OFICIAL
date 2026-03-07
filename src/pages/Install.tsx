@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Share, PlusSquare, MoreVertical, Download,
-  Smartphone, CheckCircle2, ArrowRight, Chrome, Globe,
+  Smartphone, CheckCircle2, ArrowRight, Chrome, Globe, LayoutDashboard,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
