@@ -54,7 +54,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<IndexRoute />} />
-            <Route path="/design-preview" element={<DesignPrevall />} />
+            <Route path="/install" element={<Install />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
 
