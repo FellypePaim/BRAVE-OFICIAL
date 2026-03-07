@@ -113,16 +113,16 @@ export default function DesignPreview() {
       {/* DESKTOP */}
       {device === "desktop" && (
         <div style={{ display: "flex", width: "100%", maxWidth: 1400, minHeight: "calc(100vh - 60px)", position: "relative", zIndex: 1 }}>
-          <DesktopSidebar tk={tk} glass={style === "glass"} />
-          <main style={{ flex: 1, overflow: "auto", padding: "24px 28px" }}>
-            <DashboardContent tk={tk} glass={style === "glass"} />
+          <DesktopSidebar tk={tk} glass={style === "glass"} neo={style === "neo"} />
+          <main style={{ flex: 1, overflow: "auto", padding: style === "neo" ? "32px 36px" : "24px 28px" }}>
+            <DashboardContent tk={tk} glass={style === "glass"} neo={style === "neo"} />
           </main>
         </div>
       )}
 
       {/* MOBILE */}
       {device === "mobile" && (
-        <div style={{ width: 390, minHeight: 844, background: tk.bg, borderRadius: 24, border: `2px solid ${tk.border}`, overflow: "hidden", margin: "24px 0", position: "relative", display: "flex", flexDirection: "column", boxShadow: style === "glass" ? t2.glowAccent : "none", zIndex: 1 }}>
+        <div style={{ width: 390, minHeight: 844, background: tk.bg, borderRadius: 24, border: style === "neo" ? "2px solid #222" : `2px solid ${tk.border}`, overflow: "hidden", margin: "24px 0", position: "relative", display: "flex", flexDirection: "column", boxShadow: style === "glass" ? t2.glowAccent : "none", zIndex: 1 }}>
           {/* Status bar */}
           <div style={{ height: 44, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", fontSize: 12, fontWeight: 600 }}>
             <span>9:41</span>
@@ -132,11 +132,11 @@ export default function DesignPreview() {
           </div>
 
           {/* Mobile header */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 16px 16px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: style === "neo" ? "8px 20px 20px" : "8px 16px 16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 32, height: 32, borderRadius: style === "glass" ? 10 : 8, background: tk.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#fff", ...(style === "glass" ? { boxShadow: `0 0 16px ${t2.accentGlow}` } : {}) }}>B</div>
+              <div style={{ width: 32, height: 32, borderRadius: style === "neo" ? 10 : style === "glass" ? 10 : 8, background: tk.accent, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#fff", ...(style === "glass" ? { boxShadow: `0 0 16px ${t2.accentGlow}` } : {}) }}>B</div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.02em" }}>Olá, João 👋</div>
+                <div style={{ fontSize: style === "neo" ? 17 : 15, fontWeight: 700, letterSpacing: "-0.03em" }}>Olá, João 👋</div>
                 <div style={{ fontSize: 11, color: tk.textMuted }}>Março 2026</div>
               </div>
             </div>
@@ -144,15 +144,15 @@ export default function DesignPreview() {
           </div>
 
           {/* Scrollable */}
-          <div style={{ flex: 1, overflow: "auto", padding: "0 14px 100px", display: "flex", flexDirection: "column", gap: 12 }}>
-            <MobileSummary tk={tk} glass={style === "glass"} />
-            <MobileChart tk={tk} glass={style === "glass"} />
-            <MobileBudget tk={tk} glass={style === "glass"} />
-            <MobileTransactions tk={tk} glass={style === "glass"} />
+          <div style={{ flex: 1, overflow: "auto", padding: style === "neo" ? "0 16px 100px" : "0 14px 100px", display: "flex", flexDirection: "column", gap: style === "neo" ? 16 : 12 }}>
+            <MobileSummary tk={tk} glass={style === "glass"} neo={style === "neo"} />
+            <MobileChart tk={tk} glass={style === "glass"} neo={style === "neo"} />
+            <MobileBudget tk={tk} glass={style === "glass"} neo={style === "neo"} />
+            <MobileTransactions tk={tk} glass={style === "glass"} neo={style === "neo"} />
           </div>
 
           {/* Bottom nav */}
-          <MobileBottomNav tk={tk} glass={style === "glass"} />
+          <MobileBottomNav tk={tk} glass={style === "glass"} neo={style === "neo"} />
         </div>
       )}
 
