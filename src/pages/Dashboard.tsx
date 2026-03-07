@@ -486,9 +486,19 @@ export default function Dashboard() {
             </button>
           </div>
           {transactions.length === 0 ? (
-            <div className="flex flex-col items-center text-center py-6">
-              <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center"><CalendarDays className="h-6 w-6 text-muted-foreground/50" /></div>
-              <p className="mt-3 text-sm text-muted-foreground">Nenhuma transação no período</p>
+            <div className="flex flex-col items-center text-center py-8">
+              <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
+                <CalendarDays className="h-7 w-7 text-primary/50" />
+              </div>
+              <p className="mt-3 text-sm font-medium text-foreground">Nenhuma transação no período</p>
+              <p className="text-xs text-muted-foreground mt-1">Adicione receitas e despesas para acompanhar suas finanças</p>
+              <AddTransactionDialog
+                trigger={
+                  <Button size="sm" className="mt-4 rounded-full gap-1.5">
+                    <Plus className="h-3.5 w-3.5" /> Adicionar transação
+                  </Button>
+                }
+              />
             </div>
           ) : (
             <div className="space-y-1">
