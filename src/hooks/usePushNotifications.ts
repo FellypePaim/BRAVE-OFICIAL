@@ -32,9 +32,8 @@ export function usePushNotifications() {
           registration.showNotification(title, {
             icon: "/icons/icon-192.png",
             badge: "/icons/icon-192.png",
-            vibrate: [200, 100, 200],
             ...options,
-          });
+          } as any);
         });
       } else {
         new Notification(title, {
