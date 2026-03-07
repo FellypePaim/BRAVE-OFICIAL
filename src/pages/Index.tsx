@@ -88,7 +88,7 @@ function Header({ onOpenAuth }: { onOpenAuth: () => void }) {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-xl border-b border-white/[0.06]">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <a href="#" className="flex items-center gap-2.5 font-bold text-xl text-foreground">
           <BraveLogo size={38} />
@@ -112,7 +112,7 @@ function Header({ onOpenAuth }: { onOpenAuth: () => void }) {
         </button>
       </div>
       {open && (
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="md:hidden border-t border-border bg-background px-4 pb-4">
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="md:hidden border-t border-white/[0.06] bg-background/80 backdrop-blur-xl px-4 pb-4">
           {links.map((l) => (
             <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="block py-3 text-muted-foreground hover:text-foreground transition-colors">
               {l.label}
