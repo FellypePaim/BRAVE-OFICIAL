@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { UserPlus, Eye, EyeOff, Moon, Sun } from "lucide-react";
 import braveLogoImg from "@/assets/brave-logo-cropped.png";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "next-themes";
 
 const formatCpfCnpj = (value: string) => {
   const digits = value.replace(/\D/g, "").slice(0, 14);
