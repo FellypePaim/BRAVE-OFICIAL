@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Share, PlusSquare, MoreVertical, Download,
-  Smartphone, CheckCircle2, ArrowRight, Chrome, Globe,
+  Smartphone, CheckCircle2, ArrowRight, Chrome, Globe, LayoutDashboard,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
@@ -35,6 +36,8 @@ const androidSteps = [
 export default function Install() {
   const [activeTab, setActiveTab] = useState<"iphone" | "android">(isIOS() ? "iphone" : "android");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const { user } = useAuth();
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -70,9 +73,26 @@ export default function Install() {
             </div>
             <span className="font-bold text-foreground">Brave</span>
           </Link>
-          <Link to="/login">
-            <Button variant="ghost" size="sm" className="text-xs">Entrar</Button>
-          </Link>
+          {user ? (
+            <Link to="/dashboard" className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+              <Button variant="ghost" size="sm" className="text-xs gap-1.5">
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="text-xs">Entrar</Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm" className="text-xs">Criar conta</Button>
+              </Link>
+            </div>
+          )}
         </div>
       </header>
 
@@ -146,12 +166,32 @@ export default function Install() {
 
         {/* CTA */}
         <div className="text-center">
-          <p className="text-muted-foreground text-sm mb-3">Já tem conta?</p>
-          <Link to="/login">
-            <Button className="gap-2 rounded-xl">
-              Entrar <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <p className="text-muted-foreground text-sm mb-3">Voltar ao app</p>
+              <Link to="/dashboard">
+                <Button className="gap-2 rounded-xl">
+                  <LayoutDashboard className="w-4 h-4" /> Ir ao Dashboard
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-muted-foreground text-sm mb-3">Já tem conta?</p>
+              <div className="flex gap-3 justify-center">
+                <Link to="/login">
+                  <Button className="gap-2 rounded-xl">
+                    Entrar <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="outline" className="gap-2 rounded-xl">
+                    Criar conta
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>
