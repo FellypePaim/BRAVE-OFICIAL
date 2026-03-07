@@ -46,8 +46,8 @@ function IndexRoute() {
 }
 
 const App = () => (
+  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
   <PWASplashScreen>
-  <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
