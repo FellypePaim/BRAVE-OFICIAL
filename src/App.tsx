@@ -116,5 +116,6 @@ const App = () => (
   </QueryClientProvider>
   </PWASplashScreen>
   </ThemeProvider>
+);
 
 export default App;
