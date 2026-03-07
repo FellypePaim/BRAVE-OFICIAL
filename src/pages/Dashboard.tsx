@@ -398,12 +398,19 @@ export default function Dashboard() {
           <CardContent className="p-3 md:p-5">
             <h3 className="font-semibold text-foreground text-sm md:text-base">Gastos por Categoria</h3>
             {catEntries.length === 0 ? (
-              <div className="mt-8 flex flex-col items-center text-center pb-6">
-                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                  <Sparkles className="h-6 w-6 text-muted-foreground/50" />
+              <div className="mt-6 flex flex-col items-center text-center pb-4">
+                <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
+                  <TrendingDown className="h-7 w-7 text-primary/50" />
                 </div>
-                <p className="mt-3 text-sm text-muted-foreground">Nenhum gasto registrado</p>
-                <p className="text-xs text-muted-foreground">Comece a registrar seus gastos!</p>
+                <p className="mt-3 text-sm font-medium text-foreground">Nenhum gasto registrado</p>
+                <p className="text-xs text-muted-foreground mt-1">Registre sua primeira despesa para ver os gastos por categoria</p>
+                <AddTransactionDialog
+                  trigger={
+                    <Button size="sm" className="mt-4 rounded-full gap-1.5">
+                      <Plus className="h-3.5 w-3.5" /> Registrar gasto
+                    </Button>
+                  }
+                />
               </div>
             ) : (
               <div className="mt-4 space-y-3">
@@ -430,11 +437,14 @@ export default function Dashboard() {
             </div>
             {goals.length === 0 ? (
               <div className="mt-6 flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <Check className="h-6 w-6 text-emerald-500" />
+                <div className="h-14 w-14 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <CalendarCheck className="h-7 w-7 text-emerald-500/60" />
                 </div>
-                <p className="mt-3 text-sm font-medium text-foreground">Nenhuma meta criada</p>
-                <p className="text-xs text-muted-foreground">Crie metas em "Metas Financeiras"</p>
+                <p className="mt-3 text-sm font-medium text-foreground">Crie sua primeira meta</p>
+                <p className="text-xs text-muted-foreground mt-1">Defina objetivos como viagens ou reserva de emergência</p>
+                <Button size="sm" variant="outline" className="mt-4 rounded-full gap-1.5 border-emerald-300 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20" onClick={() => navigate("/dashboard/goals")}>
+                  <Plus className="h-3.5 w-3.5" /> Criar meta
+                </Button>
               </div>
             ) : (
               <div className="mt-4 space-y-3">
@@ -476,9 +486,19 @@ export default function Dashboard() {
             </button>
           </div>
           {transactions.length === 0 ? (
-            <div className="flex flex-col items-center text-center py-6">
-              <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center"><CalendarDays className="h-6 w-6 text-muted-foreground/50" /></div>
-              <p className="mt-3 text-sm text-muted-foreground">Nenhuma transação no período</p>
+            <div className="flex flex-col items-center text-center py-8">
+              <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
+                <CalendarDays className="h-7 w-7 text-primary/50" />
+              </div>
+              <p className="mt-3 text-sm font-medium text-foreground">Nenhuma transação no período</p>
+              <p className="text-xs text-muted-foreground mt-1">Adicione receitas e despesas para acompanhar suas finanças</p>
+              <AddTransactionDialog
+                trigger={
+                  <Button size="sm" className="mt-4 rounded-full gap-1.5">
+                    <Plus className="h-3.5 w-3.5" /> Adicionar transação
+                  </Button>
+                }
+              />
             </div>
           ) : (
             <div className="space-y-1">

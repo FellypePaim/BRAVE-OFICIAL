@@ -4,7 +4,6 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { AnimatedOutlet } from "@/components/AnimatedOutlet";
 import { Moon, Sun } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import PlanExpiredModal from "@/components/PlanExpiredModal";
 import WhatsAppBanner from "@/components/WhatsAppBanner";
@@ -13,21 +12,15 @@ import TestPlanBanner from "@/components/TestPlanBanner";
 import { useGamification } from "@/hooks/useGamification";
 import { AchievementPopup, LevelUpPopup } from "@/components/AchievementPopup";
 import { GlassBackground } from "@/components/GlassBackground";
+import { useTheme } from "next-themes";
 
 export default function DashboardLayout() {
   const {
     pendingAchievement, clearPendingAchievement,
     pendingLevelUp, clearPendingLevelUp,
   } = useGamification();
-  const [dark, setDark] = useState(() => {
-    const saved = localStorage.getItem("theme");
-    return saved ? saved === "dark" : true; // Default to dark for glassmorphism
-  });
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-    localStorage.setItem("theme", dark ? "dark" : "light");
-  }, [dark]);
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <SidebarProvider>
@@ -51,10 +44,10 @@ export default function DashboardLayout() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setDark(!dark)}
+                onClick={() => setTheme(isDark ? "light" : "dark")}
                 className="text-muted-foreground hover:text-foreground"
               >
-                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </Button>
             </div>
           </header>

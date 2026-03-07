@@ -14,6 +14,7 @@ import WhatsAppLinkCard from "@/components/WhatsAppLinkCard";
 import { useGamification } from "@/hooks/useGamification";
 import { motion } from "framer-motion";
 import CheckoutDialog from "@/components/CheckoutDialog";
+import PushNotificationToggle from "@/components/PushNotificationToggle";
 import {
   User, Camera, MessageSquare, Crown, HeadphonesIcon,
   Bell, Mail, Sparkles,
@@ -744,6 +745,10 @@ export default function Settings() {
               onCheckedChange={(v) => { setNotifyMonthlyReport(v); saveNotifications("notify_monthly_report", v); }}
             />
           </div>
+
+
+          {/* Push Notifications */}
+          <PushNotificationToggle />
         </div>
       </Card>
 
