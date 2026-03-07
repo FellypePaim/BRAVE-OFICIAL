@@ -348,7 +348,7 @@ function Features() {
   const sectionY = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   return (
-    <section id="funcionalidades" className="py-16 md:py-24 bg-secondary/30 relative overflow-hidden" ref={ref}>
+    <section id="funcionalidades" className="py-16 md:py-24 bg-white/[0.02] relative overflow-hidden" ref={ref}>
       <div className="container mx-auto px-4">
         <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={fadeUp} className="text-3xl md:text-4xl font-bold text-center text-foreground">
           Funcionalidades do App de Finanças com IA
