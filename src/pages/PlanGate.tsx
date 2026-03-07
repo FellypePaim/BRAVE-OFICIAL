@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Crown, Zap, Star, CheckCircle2, Lock, MessageSquare, Clock, LogOut, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import CheckoutDialog from "@/components/CheckoutDialog";
 
 const NOX_PHONE = "5537999385148";
 const NOX_PHONE_DISPLAY = "(37) 9 9938-5148";
@@ -68,6 +69,7 @@ export default function PlanGate() {
   const { toast } = useToast();
   const [planInfo, setPlanInfo] = useState<{ plan: string; name: string; alreadyUsedTest: boolean; cpfCnpj: string | null } | null>(null);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<"mensal" | "anual" | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -110,22 +112,14 @@ export default function PlanGate() {
     }
   };
 
-  const handleCheckout = async (plan: "mensal" | "anual") => {
-    setLoadingPlan(plan);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan, cpfCnpj: planInfo?.cpfCnpj || undefined },
-      });
-      if (error || !data?.url) throw new Error(error?.message || "Erro ao criar sessão de pagamento");
-      window.location.href = data.url;
-    } catch (err: any) {
-      toast({
-        title: "Erro ao processar pagamento",
-        description: err.message,
-        variant: "destructive",
-      });
-      setLoadingPlan(null);
-    }
+  const handleCheckout = (plan: "mensal" | "anual") => {
+    setCheckoutPlan(plan);
+  };
+
+  const getCheckoutPlanDetails = () => {
+    if (!checkoutPlan) return { name: "", price: "", value: 0 };
+    if (checkoutPlan === "mensal") return { name: "Brave Mensal", price: "R$ 19,90/mês", value: 19.90 };
+    return { name: "Brave Anual", price: "R$ 178,80/ano (R$ 14,90/mês)", value: 178.80 };
   };
 
   const handleLogout = async () => {
@@ -256,6 +250,17 @@ export default function PlanGate() {
           </div>
         </div>
       </div>
+
+      {checkoutPlan && (
+        <CheckoutDialog
+          open={!!checkoutPlan}
+          onOpenChange={(open) => !open && setCheckoutPlan(null)}
+          plan={checkoutPlan}
+          planName={getCheckoutPlanDetails().name}
+          planPrice={getCheckoutPlanDetails().price}
+          planValue={getCheckoutPlanDetails().value}
+        />
+      )}
     </div>
   );
 }

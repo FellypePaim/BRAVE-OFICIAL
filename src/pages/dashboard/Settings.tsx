@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import WhatsAppLinkCard from "@/components/WhatsAppLinkCard";
 import { useGamification } from "@/hooks/useGamification";
 import { motion } from "framer-motion";
+import CheckoutDialog from "@/components/CheckoutDialog";
 import {
   User, Camera, MessageSquare, Crown, HeadphonesIcon,
   Bell, Mail, Sparkles,
@@ -115,6 +116,7 @@ export default function Settings() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<"mensal" | "anual" | null>(null);
 
   // Security: change email / password
   const [newEmail, setNewEmail] = useState("");
@@ -288,22 +290,18 @@ export default function Settings() {
   const currentPlan = PLANS.find(p => p.key === plan);
   const initials = displayName ? displayName.charAt(0).toUpperCase() : "U";
 
-  const handleCheckout = async (planKey: "mensal" | "anual") => {
-    setLoadingPlan(planKey);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan: planKey },
-      });
-      if (error || !data?.url) throw new Error(error?.message || "Erro ao criar sessão de pagamento");
-      window.open(data.url, "_blank");
-    } catch (err: any) {
-      toast({ title: "Erro ao processar pagamento", description: err.message, variant: "destructive" });
-    } finally {
-      setLoadingPlan(null);
-    }
+  const handleCheckout = (planKey: "mensal" | "anual") => {
+    setCheckoutPlan(planKey);
+  };
+
+  const getCheckoutDetails = () => {
+    if (!checkoutPlan) return { name: "", price: "", value: 0 };
+    if (checkoutPlan === "mensal") return { name: "Brave Mensal", price: "R$ 19,90/mês", value: 19.90 };
+    return { name: "Brave Anual", price: "R$ 178,80/ano (R$ 14,90/mês)", value: 178.80 };
   };
 
   return (
+    <>
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
@@ -875,5 +873,17 @@ export default function Settings() {
         </div>
       </Card>
     </div>
+
+      {checkoutPlan && (
+        <CheckoutDialog
+          open={!!checkoutPlan}
+          onOpenChange={(open) => !open && setCheckoutPlan(null)}
+          plan={checkoutPlan}
+          planName={getCheckoutDetails().name}
+          planPrice={getCheckoutDetails().price}
+          planValue={getCheckoutDetails().value}
+        />
+      )}
+    </>
   );
 }
