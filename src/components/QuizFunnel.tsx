@@ -389,7 +389,7 @@ function FeatureShowcase({ onContinue }: { onContinue: () => void }) {
             variants={fadeUp}
             initial="hidden"
             animate="visible"
-            className="flex items-start gap-3 p-3 sm:p-4 rounded-2xl border border-border bg-card/80 hover:border-primary/30 transition-colors"
+            className="flex items-start gap-3 p-3 sm:p-4 rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:bg-white/[0.06] transition-colors"
           >
             <div className={`flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-xl ${feat.bg} flex items-center justify-center ${feat.color}`}>
               <feat.icon className="h-4 w-4 sm:h-5 sm:w-5" />
