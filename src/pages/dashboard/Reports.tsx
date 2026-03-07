@@ -50,6 +50,76 @@ export default function Reports() {
     URL.revokeObjectURL(url);
   };
 
+  const handleExportPDF = () => {
+    if (transactions.length === 0) return;
+    const totalExp = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+    const totalInc = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+
+    const lines = [
+      `RELATÓRIO FINANCEIRO — ${months[Number(month)]} ${year}`,
+      `Brave Assessor`,
+      ``,
+      `RESUMO`,
+      `Receitas: ${fmt(totalInc)}`,
+      `Despesas: ${fmt(totalExp)}`,
+      `Saldo: ${fmt(totalInc - totalExp)}`,
+      ``,
+      `TRANSAÇÕES`,
+      `${"Data".padEnd(12)}${"Descrição".padEnd(30)}${"Categoria".padEnd(20)}${"Tipo".padEnd(10)}Valor`,
+      "-".repeat(90),
+    ];
+    transactions.forEach((t: any) => {
+      lines.push(
+        `${t.date.padEnd(12)}${(t.description || "").substring(0, 28).padEnd(30)}${((t.categories?.name || "Sem cat.")).substring(0, 18).padEnd(20)}${(t.type === "income" ? "Receita" : "Despesa").padEnd(10)}${fmt(Number(t.amount))}`
+      );
+    });
+    lines.push("", "-".repeat(90), `Gerado em ${new Date().toLocaleString("pt-BR")}`);
+
+    // Create a printable HTML window for PDF
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html><head><title>Relatório - ${months[Number(month)]} ${year}</title>
+      <style>
+        body { font-family: 'Courier New', monospace; font-size: 11px; padding: 40px; color: #222; }
+        h1 { font-size: 16px; margin-bottom: 4px; }
+        h2 { font-size: 12px; color: #666; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 11px; }
+        th { background: #f5f5f5; font-weight: bold; }
+        .income { color: #059669; }
+        .expense { color: #dc2626; }
+        .summary { display: flex; gap: 40px; margin: 16px 0; }
+        .summary div { background: #f9f9f9; padding: 12px 20px; border-radius: 8px; }
+        @media print { body { padding: 20px; } }
+      </style></head><body>
+      <h1>Relatório Financeiro — ${months[Number(month)]} ${year}</h1>
+      <h2>Brave Assessor</h2>
+      <div class="summary">
+        <div>Receitas: <strong class="income">${fmt(totalInc)}</strong></div>
+        <div>Despesas: <strong class="expense">${fmt(totalExp)}</strong></div>
+        <div>Saldo: <strong>${fmt(totalInc - totalExp)}</strong></div>
+      </div>
+      <table>
+        <thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th><th>Valor</th></tr></thead>
+        <tbody>
+          ${transactions.map((t: any) => `<tr>
+            <td>${new Date(t.date).toLocaleDateString("pt-BR")}</td>
+            <td>${t.description || ""}</td>
+            <td>${t.categories?.name || "Sem categoria"}</td>
+            <td class="${t.type}">${t.type === "income" ? "Receita" : "Despesa"}</td>
+            <td class="${t.type}">${fmt(Number(t.amount))}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table>
+      <p style="margin-top:20px;color:#999;font-size:10px;">Gerado em ${new Date().toLocaleString("pt-BR")}</p>
+      </body></html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
+  };
+
   const startDate = `${year}-${String(Number(month) + 1).padStart(2, "0")}-01`;
   const endDate = new Date(Number(year), Number(month) + 1, 0).toISOString().slice(0, 10);
 
@@ -143,9 +213,14 @@ export default function Reports() {
           <h1 className="text-lg md:text-2xl font-bold text-foreground">Relatórios</h1>
           <p className="text-muted-foreground text-xs md:text-sm">Análises das suas finanças</p>
         </div>
-        <Button variant="outline" size="sm" className="rounded-full gap-1 text-xs h-8 px-3" onClick={handleExportCSV}>
-          <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="rounded-full gap-1 text-xs h-8 px-3" onClick={handleExportCSV}>
+            <FileSpreadsheet className="h-3.5 w-3.5" /> CSV
+          </Button>
+          <Button variant="outline" size="sm" className="rounded-full gap-1 text-xs h-8 px-3" onClick={handleExportPDF}>
+            <FileText className="h-3.5 w-3.5" /> PDF
+          </Button>
+        </div>
       </div>
 
       {/* Period Selection */}
