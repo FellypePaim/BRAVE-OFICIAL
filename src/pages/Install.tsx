@@ -36,6 +36,8 @@ const androidSteps = [
 export default function Install() {
   const [activeTab, setActiveTab] = useState<"iphone" | "android">(isIOS() ? "iphone" : "android");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const { user } = useAuth();
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
 
   useEffect(() => {
     const handler = (e: Event) => {
