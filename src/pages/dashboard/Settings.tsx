@@ -156,7 +156,7 @@ export default function Settings() {
 
     // Ensure bucket exists - upload directly
     const { error: uploadErr } = await supabase.storage
-      .from("support-attachments")
+      .from("avatars")
       .upload(path, file, { upsert: true });
 
     if (uploadErr) {
@@ -165,7 +165,7 @@ export default function Settings() {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("support-attachments").getPublicUrl(path);
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
     const url = urlData.publicUrl;
 
     await supabase.from("profiles").update({ avatar_url: url }).eq("id", user.id);
