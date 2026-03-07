@@ -381,7 +381,7 @@ function SocialProof() {
       <div className="container mx-auto px-4">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} variants={stagger} className="flex flex-wrap justify-center gap-6">
           {stats.map((s, i) => (
-            <motion.div key={i} variants={fadeScale} className="flex items-center gap-3 rounded-full border border-border bg-card px-6 py-3 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            <motion.div key={i} variants={fadeScale} className="flex items-center gap-3 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-6 py-3 hover:bg-white/[0.07] hover:-translate-y-0.5 transition-all duration-200">
               <s.icon className="h-5 w-5 text-primary" />
               <span className="font-bold text-foreground">{s.value}</span>
               <span className="text-sm text-muted-foreground">{s.label}</span>
