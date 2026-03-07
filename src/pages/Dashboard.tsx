@@ -437,11 +437,14 @@ export default function Dashboard() {
             </div>
             {goals.length === 0 ? (
               <div className="mt-6 flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <Check className="h-6 w-6 text-emerald-500" />
+                <div className="h-14 w-14 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <CalendarCheck className="h-7 w-7 text-emerald-500/60" />
                 </div>
-                <p className="mt-3 text-sm font-medium text-foreground">Nenhuma meta criada</p>
-                <p className="text-xs text-muted-foreground">Crie metas em "Metas Financeiras"</p>
+                <p className="mt-3 text-sm font-medium text-foreground">Crie sua primeira meta</p>
+                <p className="text-xs text-muted-foreground mt-1">Defina objetivos como viagens ou reserva de emergência</p>
+                <Button size="sm" variant="outline" className="mt-4 rounded-full gap-1.5 border-emerald-300 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20" onClick={() => navigate("/dashboard/goals")}>
+                  <Plus className="h-3.5 w-3.5" /> Criar meta
+                </Button>
               </div>
             ) : (
               <div className="mt-4 space-y-3">
