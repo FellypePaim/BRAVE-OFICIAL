@@ -73,13 +73,13 @@ const categories = [
   { name: "Lazer", spent: 180, budget: 500, color: "#F59E0B" },
 ];
 
-type Style = "minimal" | "glass";
+type Style = "minimal" | "glass" | "neo";
 type Device = "desktop" | "mobile";
 
 export default function DesignPreview() {
-  const [style, setStyle] = useState<Style>("glass");
+  const [style, setStyle] = useState<Style>("neo");
   const [device, setDevice] = useState<Device>("desktop");
-  const tk = style === "glass" ? t2 : t1;
+  const tk = style === "glass" ? t2 : style === "neo" ? t3 : t1;
 
   return (
     <div style={{ minHeight: "100vh", background: "#060609", fontFamily: "'Inter', -apple-system, sans-serif", color: tk.text, display: "flex", flexDirection: "column", alignItems: "center" }}>
