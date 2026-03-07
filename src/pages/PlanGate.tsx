@@ -250,6 +250,17 @@ export default function PlanGate() {
           </div>
         </div>
       </div>
+
+      {checkoutPlan && (
+        <CheckoutDialog
+          open={!!checkoutPlan}
+          onOpenChange={(open) => !open && setCheckoutPlan(null)}
+          plan={checkoutPlan}
+          planName={getCheckoutPlanDetails().name}
+          planPrice={getCheckoutPlanDetails().price}
+          planValue={getCheckoutPlanDetails().value}
+        />
+      )}
     </div>
   );
 }
