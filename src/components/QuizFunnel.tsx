@@ -338,8 +338,8 @@ function OptionCard({
       onClick={onClick}
       className={`w-full text-left p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 ${
         selected
-          ? "border-primary bg-primary/5 shadow-md shadow-primary/10"
-          : "border-border bg-card/80 hover:border-primary/30 hover:shadow-sm"
+          ? "border-primary bg-primary/10 shadow-md shadow-primary/10"
+          : "border-white/[0.08] bg-white/[0.03] backdrop-blur-sm hover:border-primary/30 hover:bg-white/[0.06]"
       }`}
       whileTap={{ scale: 0.97 }}
     >
