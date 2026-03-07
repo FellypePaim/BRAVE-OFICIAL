@@ -86,9 +86,9 @@ export default function DesignPreview() {
       {/* Switcher bar */}
       <div style={{ display: "flex", gap: 24, padding: "20px 0 16px", position: "sticky", top: 0, zIndex: 50, background: "#060609", width: "100%", justifyContent: "center", borderBottom: `1px solid rgba(255,255,255,0.06)`, flexWrap: "wrap" }}>
         <div style={{ display: "flex", gap: 6 }}>
-          {(["minimal", "glass"] as const).map((s) => (
-            <button key={s} onClick={() => setStyle(s)} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, border: "none", cursor: "pointer", background: style === s ? tk.accent : "rgba(255,255,255,0.06)", color: style === s ? "#fff" : "#9494AD", transition: "all .2s" }}>
-              {s === "minimal" ? "◼ Dark Minimal" : "◻ Glassmorphism"}
+          {([["minimal", "◼ Dark Minimal"], ["glass", "◻ Glassmorphism"], ["neo", "◉ Neo-Banking"]] as const).map(([s, label]) => (
+            <button key={s} onClick={() => setStyle(s as Style)} style={{ padding: "8px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, border: "none", cursor: "pointer", background: style === s ? tk.accent : "rgba(255,255,255,0.06)", color: style === s ? "#fff" : "#9494AD", transition: "all .2s" }}>
+              {label}
             </button>
           ))}
         </div>
