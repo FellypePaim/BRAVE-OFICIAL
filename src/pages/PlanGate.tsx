@@ -112,22 +112,14 @@ export default function PlanGate() {
     }
   };
 
-  const handleCheckout = async (plan: "mensal" | "anual") => {
-    setLoadingPlan(plan);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan, cpfCnpj: planInfo?.cpfCnpj || undefined },
-      });
-      if (error || !data?.url) throw new Error(error?.message || "Erro ao criar sessão de pagamento");
-      window.location.href = data.url;
-    } catch (err: any) {
-      toast({
-        title: "Erro ao processar pagamento",
-        description: err.message,
-        variant: "destructive",
-      });
-      setLoadingPlan(null);
-    }
+  const handleCheckout = (plan: "mensal" | "anual") => {
+    setCheckoutPlan(plan);
+  };
+
+  const getCheckoutPlanDetails = () => {
+    if (!checkoutPlan) return { name: "", price: "", value: 0 };
+    if (checkoutPlan === "mensal") return { name: "Brave Mensal", price: "R$ 19,90/mês", value: 19.90 };
+    return { name: "Brave Anual", price: "R$ 178,80/ano (R$ 14,90/mês)", value: 178.80 };
   };
 
   const handleLogout = async () => {
