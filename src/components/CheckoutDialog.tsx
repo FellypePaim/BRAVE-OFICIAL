@@ -73,6 +73,31 @@ export default function CheckoutDialog({
     }
   }, [open, resetState]);
 
+  // Poll payment status when PIX or Boleto is pending
+  useEffect(() => {
+    if (status !== "pending" || !paymentId) return;
+    if (tab !== "pix" && tab !== "boleto") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("check-payment-status", {
+          body: { paymentId },
+        });
+        if (error || data?.error) return;
+        if (data?.status === "CONFIRMED" || data?.status === "RECEIVED" || data?.status === "RECEIVED_IN_CASH") {
+          setStatus("confirmed");
+          toast({ title: "Pagamento confirmado!", description: "Seu plano será ativado em instantes." });
+          clearInterval(interval);
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 2500);
+        }
+      } catch { /* ignore polling errors */ }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [status, paymentId, tab, toast]);
+
   const handlePixCheckout = async () => {
     setStatus("loading");
     setErrorMsg("");
