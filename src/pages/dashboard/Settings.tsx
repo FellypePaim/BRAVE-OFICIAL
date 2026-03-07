@@ -116,6 +116,7 @@ export default function Settings() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<"mensal" | "anual" | null>(null);
 
   // Security: change email / password
   const [newEmail, setNewEmail] = useState("");
