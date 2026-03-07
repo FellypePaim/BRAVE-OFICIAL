@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Crown, Zap, Star, CheckCircle2, Lock, MessageSquare, Clock, LogOut, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import CheckoutDialog from "@/components/CheckoutDialog";
 
 const NOX_PHONE = "5537999385148";
 const NOX_PHONE_DISPLAY = "(37) 9 9938-5148";
