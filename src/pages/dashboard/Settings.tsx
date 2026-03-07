@@ -613,10 +613,22 @@ export default function Settings() {
                   <div className="mt-4 text-center">
                     <p className="text-xs font-medium text-emerald-600">✓ Plano atual</p>
                   </div>
-                ) : (
-                  <div className="mt-4 text-center">
-                    <p className="text-xs text-muted-foreground">Entre em contato para assinar este plano</p>
-                  </div>
+                ) : p.key === "teste" ? null : (
+                  <Button
+                    size="sm"
+                    className="w-full mt-4 rounded-xl"
+                    disabled={loadingPlan === p.key}
+                    onClick={() => handleCheckout(p.key as "mensal" | "anual")}
+                  >
+                    {loadingPlan === p.key ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                        Aguarde…
+                      </>
+                    ) : (
+                      "Assinar agora"
+                    )}
+                  </Button>
                 )}
               </div>
             );
