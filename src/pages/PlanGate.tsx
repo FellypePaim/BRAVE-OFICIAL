@@ -112,11 +112,30 @@ export default function PlanGate() {
     }
   };
 
+  const formatCpf = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 14);
+    if (digits.length <= 11) {
+      return digits.replace(/(\d{3})(\d{3})?(\d{3})?(\d{2})?/, (_, a, b, c, d) =>
+        [a, b, c].filter(Boolean).join(".") + (d ? `-${d}` : "")
+      );
+    }
+    return digits.replace(/(\d{2})(\d{3})?(\d{3})?(\d{4})?(\d{2})?/, (_, a, b, c, d, e) =>
+      [a, b, c].filter(Boolean).join(".") + (d ? `/${d}` : "") + (e ? `-${e}` : "")
+    );
+  };
+
+  const cleanCpf = cpf.replace(/\D/g, "");
+  const isCpfValid = cleanCpf.length === 11 || cleanCpf.length === 14;
+
   const handleCheckout = async (plan: "mensal" | "anual") => {
+    if (!isCpfValid) {
+      toast({ title: "CPF/CNPJ inválido", description: "Informe um CPF (11 dígitos) ou CNPJ (14 dígitos) válido.", variant: "destructive" });
+      return;
+    }
     setLoadingPlan(plan);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan },
+        body: { plan, cpfCnpj: cleanCpf },
       });
       if (error || !data?.url) throw new Error(error?.message || "Erro ao criar sessão de pagamento");
       window.location.href = data.url;
