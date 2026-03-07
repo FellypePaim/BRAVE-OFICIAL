@@ -166,12 +166,32 @@ export default function Install() {
 
         {/* CTA */}
         <div className="text-center">
-          <p className="text-muted-foreground text-sm mb-3">Já tem conta?</p>
-          <Link to="/login">
-            <Button className="gap-2 rounded-xl">
-              Entrar <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <p className="text-muted-foreground text-sm mb-3">Voltar ao app</p>
+              <Link to="/dashboard">
+                <Button className="gap-2 rounded-xl">
+                  <LayoutDashboard className="w-4 h-4" /> Ir ao Dashboard
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-muted-foreground text-sm mb-3">Já tem conta?</p>
+              <div className="flex gap-3 justify-center">
+                <Link to="/login">
+                  <Button className="gap-2 rounded-xl">
+                    Entrar <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button variant="outline" className="gap-2 rounded-xl">
+                    Criar conta
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>
