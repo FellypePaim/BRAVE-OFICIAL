@@ -183,15 +183,15 @@ function Hero({ onOpenAuth }: { onOpenAuth: () => void }) {
 
           {/* Social proof badges */}
           <motion.div variants={fadeUp} className="mt-6 flex flex-wrap gap-3">
-            <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm">
+            <div className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-4 py-2 text-sm">
               <Users className="h-4 w-4 text-primary" />
               <span className="font-semibold text-foreground">+2.000 usuários</span>
             </div>
-            <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm">
+            <div className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-4 py-2 text-sm">
               <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
               <span className="font-semibold text-foreground">4.9</span>
             </div>
-            <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm">
+            <div className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm px-4 py-2 text-sm">
               <Shield className="h-4 w-4 text-primary" />
               <span className="font-semibold text-foreground">100% seguro</span>
             </div>
