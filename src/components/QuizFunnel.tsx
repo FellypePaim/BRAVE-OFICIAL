@@ -556,7 +556,7 @@ function QuizResult({ answers, onOpenAuth }: { answers: QuizAnswers; onOpenAuth:
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 + i * 0.1, duration: 0.4 }}
-            className="flex items-center gap-3 p-3 rounded-xl bg-card/80 border border-border"
+            className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-sm"
           >
             <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <item.icon className="h-4 w-4" />
