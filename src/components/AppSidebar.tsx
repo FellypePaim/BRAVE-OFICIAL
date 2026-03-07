@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Wallet, Tag, CreditCard, CalendarCheck,
   Target, TrendingUp, Brain, FileText, HeadphonesIcon,
   Settings, LogOut, Sparkles, ShieldCheck, Users, Bell, ArrowLeftRight, Trophy,
-  Star, Flame
+  Flame
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/contexts/AuthContext";
