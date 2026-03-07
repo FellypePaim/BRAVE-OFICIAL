@@ -73,9 +73,26 @@ export default function Install() {
             </div>
             <span className="font-bold text-foreground">Brave</span>
           </Link>
-          <Link to="/login">
-            <Button variant="ghost" size="sm" className="text-xs">Entrar</Button>
-          </Link>
+          {user ? (
+            <Link to="/dashboard" className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+              <Button variant="ghost" size="sm" className="text-xs gap-1.5">
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="text-xs">Entrar</Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm" className="text-xs">Criar conta</Button>
+              </Link>
+            </div>
+          )}
         </div>
       </header>
 
