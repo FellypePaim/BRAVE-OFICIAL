@@ -11,34 +11,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { LogIn, UserPlus, Eye, EyeOff, Check, ArrowLeft } from "lucide-react";
+import { LogIn, UserPlus, Eye, EyeOff } from "lucide-react";
 
 type Tab = "login" | "signup";
-type SignupStep = "plans" | "form";
-
-const plans = [
-  {
-    id: "mensal" as const,
-    name: "Mensal",
-    price: "R$ 19,90",
-    period: "/mês",
-    features: ["Todas as funcionalidades", "Cancelamento sem burocracia"],
-    popular: false,
-  },
-  {
-    id: "anual" as const,
-    name: "Anual",
-    price: "R$ 14,90",
-    period: "/mês",
-    features: [
-      "Todas as funcionalidades",
-      "12x de R$ 14,90",
-      "Economia de 25%",
-      "Cancelamento sem burocracia",
-    ],
-    popular: true,
-  },
-];
 
 interface AuthModalProps {
   open: boolean;
@@ -49,8 +24,6 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("login");
-  const [signupStep, setSignupStep] = useState<SignupStep>("plans");
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   // Login fields
   const [loginEmail, setLoginEmail] = useState("");
@@ -68,8 +41,6 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   const resetState = () => {
     setTab("login");
-    setSignupStep("plans");
-    setSelectedPlan(null);
     setLoginEmail("");
     setLoginPassword("");
     setSignupEmail("");
@@ -121,23 +92,13 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     }
   };
 
-  const switchToSignup = () => {
-    setTab("signup");
-    setSignupStep("plans");
-  };
-
-  const selectPlan = (planId: string) => {
-    setSelectedPlan(planId);
-    setSignupStep("form");
-  };
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md p-0 gap-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Tab switcher */}
-        <div className="flex border-b border-border">
+        <div className="flex border-b border-white/[0.06]">
           <button
-            onClick={() => { setTab("login"); setSignupStep("plans"); }}
+            onClick={() => setTab("login")}
             className={`flex-1 py-3 text-sm font-medium transition-colors ${
               tab === "login"
                 ? "text-primary border-b-2 border-primary"
@@ -147,7 +108,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
             Entrar
           </button>
           <button
-            onClick={switchToSignup}
+            onClick={() => setTab("signup")}
             className={`flex-1 py-3 text-sm font-medium transition-colors ${
               tab === "signup"
                 ? "text-primary border-b-2 border-primary"
@@ -210,88 +171,18 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               </Button>
               <p className="text-sm text-muted-foreground text-center">
                 Não tem conta?{" "}
-                <button type="button" onClick={switchToSignup} className="text-primary hover:underline font-medium">
+                <button type="button" onClick={() => setTab("signup")} className="text-primary hover:underline font-medium">
                   Criar conta
                 </button>
               </p>
             </form>
           )}
 
-          {/* ─── SIGNUP: PLANS ─── */}
-          {tab === "signup" && signupStep === "plans" && (
-            <div className="space-y-4">
-              <DialogHeader>
-                <DialogTitle className="text-center text-xl">Escolha seu plano</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
-                {plans.map((plan) => (
-                  <button
-                    key={plan.id}
-                    onClick={() => selectPlan(plan.id)}
-                    className={`w-full text-left rounded-xl border p-4 transition-all hover:shadow-md hover:-translate-y-0.5 ${
-                      plan.popular
-                        ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-                        : "border-border bg-card hover:border-primary/30"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-foreground">{plan.name}</span>
-                          {plan.popular && (
-                            <span className="text-[10px] font-bold uppercase bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
-                              Popular
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1">
-                          <span className="text-2xl font-bold text-foreground">{plan.price}</span>
-                          <span className="text-sm text-muted-foreground">{plan.period}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <ul className="mt-3 space-y-1">
-                      {plan.features.map((f, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </button>
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground text-center">
-                Já tem conta?{" "}
-                <button type="button" onClick={() => setTab("login")} className="text-primary hover:underline font-medium">
-                  Entrar
-                </button>
-              </p>
-            </div>
-          )}
-
-          {/* ─── SIGNUP: FORM ─── */}
-          {tab === "signup" && signupStep === "form" && (
+          {/* ─── SIGNUP ─── */}
+          {tab === "signup" && (
             <form onSubmit={handleSignup} className="space-y-4">
               <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSignupStep("plans")}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <ArrowLeft className="h-5 w-5" />
-                  </button>
-                  <DialogTitle className="text-xl">Criar conta</DialogTitle>
-                </div>
-                {selectedPlan && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Plano selecionado:{" "}
-                    <span className="font-medium text-primary">
-                      {plans.find((p) => p.id === selectedPlan)?.name}
-                    </span>
-                  </p>
-                )}
+                <DialogTitle className="text-center text-xl">Criar conta</DialogTitle>
               </DialogHeader>
               <div className="space-y-2">
                 <Label htmlFor="modal-signup-name">Nome</Label>
@@ -358,6 +249,12 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                   </span>
                 )}
               </Button>
+              <p className="text-sm text-muted-foreground text-center">
+                Já tem conta?{" "}
+                <button type="button" onClick={() => setTab("login")} className="text-primary hover:underline font-medium">
+                  Entrar
+                </button>
+              </p>
             </form>
           )}
         </div>
