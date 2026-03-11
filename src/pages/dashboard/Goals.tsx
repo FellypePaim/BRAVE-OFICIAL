@@ -23,7 +23,7 @@ export default function Goals() {
   const [depositGoalId, setDepositGoalId] = useState<string | null>(null);
   const [depositAmount, setDepositAmount] = useState("");
 
-  const { data: goals = [] } = useQuery({
+  const { data: goals = [], isLoading: loadingGoals } = useQuery({
     queryKey: ["goals", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
