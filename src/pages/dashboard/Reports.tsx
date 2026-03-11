@@ -29,7 +29,79 @@ export default function Reports() {
   const [compareMonth, setCompareMonth] = useState(String(new Date().getMonth() === 0 ? 11 : new Date().getMonth() - 1));
   const [compareYear, setCompareYear] = useState(String(new Date().getMonth() === 0 ? new Date().getFullYear() - 1 : new Date().getFullYear()));
   const [sendWhatsApp, setSendWhatsApp] = useState(false);
+  const [sendingWhatsApp, setSendingWhatsApp] = useState(false);
   const [activeView, setActiveView] = useState<"categoria" | "fluxo" | "comparativo">("categoria");
+
+  // WhatsApp link check
+  const { data: whatsappLink } = useQuery({
+    queryKey: ["whatsapp-link-report", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("whatsapp_links")
+        .select("phone_number, verified")
+        .eq("user_id", user!.id)
+        .eq("verified", true)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const handleSendWhatsAppReport = async () => {
+    if (!whatsappLink?.phone_number) {
+      toast.error("WhatsApp não conectado", {
+        description: "Conecte seu WhatsApp nas configurações para enviar relatórios.",
+      });
+      setSendWhatsApp(false);
+      return;
+    }
+    if (transactions.length === 0) {
+      toast.error("Nenhuma transação neste período");
+      return;
+    }
+
+    setSendingWhatsApp(true);
+    try {
+      // Build report text
+      const totalExp = transactions.filter(t => t.type === "expense").reduce((s, t) => s + Number(t.amount), 0);
+      const totalInc = transactions.filter(t => t.type === "income").reduce((s, t) => s + Number(t.amount), 0);
+      const saldo = totalInc - totalExp;
+
+      const catBreakdown = categoryData.slice(0, 5).map((c, i) => {
+        const pct = totalExp > 0 ? ((c.total / totalExp) * 100).toFixed(0) : "0";
+        return `  ${i + 1}. ${c.name}: ${fmt(c.total)} (${pct}%)`;
+      }).join("\n");
+
+      const message = [
+        `📊 *Relatório — ${months[Number(month)]} ${year}*`,
+        ``,
+        `📈 Receitas: *${fmt(totalInc)}*`,
+        `📉 Despesas: *${fmt(totalExp)}*`,
+        `💰 Saldo: *${fmt(saldo)}*`,
+        ``,
+        totalExp > 0 ? `🏷️ *Top categorias:*\n${catBreakdown}` : "",
+        ``,
+        `_Brave Assessor 🤖_`,
+      ].filter(Boolean).join("\n");
+
+      // Use Evolution API to send via whatsapp-webhook or direct
+      const { error } = await supabase.functions.invoke("evolution-api", {
+        body: {
+          action: "sendText",
+          phone: whatsappLink.phone_number,
+          message,
+        },
+      });
+
+      if (error) throw error;
+      toast.success("Relatório enviado por WhatsApp! 📱");
+    } catch (err: any) {
+      console.error("WhatsApp send error:", err);
+      toast.error("Erro ao enviar relatório", { description: err.message });
+    } finally {
+      setSendingWhatsApp(false);
+    }
+  };
 
   const handleExportCSV = () => {
     if (transactions.length === 0) return;
