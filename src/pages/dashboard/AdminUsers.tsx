@@ -176,7 +176,7 @@ export default function AdminUsers() {
     setEditPassword("");
     setShowPassword(false);
 
-    // Fetch email via edge function (admin API)
+    // Fetch email + cpf via edge function (admin API)
     const { data: { session } } = await supabase.auth.getSession();
     if (session?.access_token) {
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
@@ -194,8 +194,10 @@ export default function AdminUsers() {
         );
         const json = await res.json();
         setEditEmail(json.user?.email || "");
+        setEditCpf(json.user?.cpf_cnpj || "");
       } catch {
         setEditEmail("");
+        setEditCpf("");
       }
     }
   };
