@@ -274,7 +274,18 @@ export function EditTransactionDialog({ transaction, open, onOpenChange }: Props
           {/* Descrição */}
           <div>
             <label className="text-sm font-semibold text-foreground mb-1.5 block">Descrição</label>
-            <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ex: Almoço no restaurante" className="h-11 rounded-xl border-border" />
+            <Input
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                if (!categoryId && e.target.value.length >= 3) {
+                  const match = autoCategorize(e.target.value, categories);
+                  if (match) setCategoryId(match.id);
+                }
+              }}
+              placeholder="Ex: Almoço no restaurante"
+              className="h-11 rounded-xl border-border"
+            />
           </div>
 
           {/* Data */}
