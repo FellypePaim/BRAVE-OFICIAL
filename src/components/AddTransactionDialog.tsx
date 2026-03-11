@@ -54,7 +54,7 @@ export function AddTransactionDialog({ trigger }: Props) {
   const { data: cards = [] } = useQuery({
     queryKey: ["cards", user?.id],
     queryFn: async () => {
-      const { data } = await supabase.from("cards").select("id, name, brand, credit_limit, color").eq("user_id", user!.id).order("name");
+      const { data } = await supabase.from("cards").select("id, name, brand, credit_limit, color, due_day").eq("user_id", user!.id).order("name");
       return data || [];
     },
     enabled: !!user && open,
