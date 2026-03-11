@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, Cell } from "recharts";
 import {
   Calendar, FileText, BarChart3, TrendingUp, TrendingDown,
-  PieChart, ArrowUpDown, Send, FileSpreadsheet, DollarSign, Tag,
+  PieChart, ArrowUpDown, Send, FileSpreadsheet, DollarSign, Tag, Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const months = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
