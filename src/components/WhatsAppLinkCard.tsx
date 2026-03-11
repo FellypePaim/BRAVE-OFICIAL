@@ -1,220 +1,147 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
-  MessageSquare, Wifi, WifiOff, RefreshCw, QrCode, Loader2,
-  CheckCircle2, XCircle, Unlink, Settings2, Webhook,
+  MessageSquare, Phone, CheckCircle2, Copy, Loader2, Unlink, RefreshCw,
 } from "lucide-react";
 
 interface WhatsAppLinkCardProps {
   userId?: string;
 }
 
-type ConnectionState = "open" | "close" | "connecting" | "unknown";
-
-interface SetupStep {
-  label: string;
-  status: "pending" | "loading" | "done" | "error";
-}
+const NOX_PHONE = "5537999385148";
+const NOX_PHONE_DISPLAY = "(37) 9 9938-5148";
 
 export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
   const { toast } = useToast();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [verificationCode, setVerificationCode] = useState<string | null>(null);
+  const [linkedPhone, setLinkedPhone] = useState<string | null>(null);
+  const [isVerified, setIsVerified] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [connectionState, setConnectionState] = useState<ConnectionState>("unknown");
-  const [qrCode, setQrCode] = useState<string | null>(null);
-  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
-  const [instanceName, setInstanceName] = useState<string | null>(null);
-  const [showQrFlow, setShowQrFlow] = useState(false);
-  const [qrCountdown, setQrCountdown] = useState(20);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [checking, setChecking] = useState(false);
+  const [unlinking, setUnlinking] = useState(false);
 
-  const [setupSteps, setSetupSteps] = useState<SetupStep[]>([
-    { label: "Criando instância...", status: "pending" },
-    { label: "Sync Full History + Configurações", status: "pending" },
-    { label: "Webhook + Base64 + Eventos", status: "pending" },
-    { label: "Gerando QR Code", status: "pending" },
-  ]);
-
-  const callEvolution = useCallback(async (action: string) => {
-    const { data, error } = await supabase.functions.invoke("evolution-api", {
-      body: { action },
-    });
-    if (error) throw new Error(error.message);
-    return data;
-  }, []);
-
-  const checkStatus = useCallback(async () => {
-    try {
-      const data = await callEvolution("status");
-      const state = data?.state || data?.instance?.state || "close";
-      setConnectionState(state === "open" ? "open" : "close");
-      setInstanceName(data?.instance?.instanceName || data?.instanceName || null);
-
-      // Try to get phone from instance info
-      if (state === "open") {
-        const ownerJid = data?.instance?.owner || data?.owner;
-        if (ownerJid) {
-          const phone = ownerJid.replace(/@.*/, "");
-          setPhoneNumber(phone);
-        }
-      }
-    } catch {
-      setConnectionState("unknown");
-    }
-  }, [callEvolution]);
-
+  // Fetch existing link
   useEffect(() => {
     if (!userId) return;
-    checkStatus();
-  }, [userId, checkStatus]);
+    const fetchLink = async () => {
+      const { data } = await supabase
+        .from("whatsapp_links")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (data) {
+        setLinkedPhone(data.phone_number);
+        setIsVerified(data.verified ?? false);
+        setVerificationCode(data.verification_code);
+        if (data.phone_number) setPhoneNumber(data.phone_number);
+      }
+    };
+    fetchLink();
+  }, [userId]);
 
-  // QR code polling & countdown
-  useEffect(() => {
-    if (!showQrFlow || connectionState === "open") {
-      if (pollRef.current) clearInterval(pollRef.current);
-      if (countdownRef.current) clearInterval(countdownRef.current);
+  const generateCode = () => {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "BRAVE-";
+    for (let i = 0; i < 4; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  };
+
+  const formatPhoneInput = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const getCleanPhone = (phone: string) => {
+    const digits = phone.replace(/\D/g, "");
+    return digits.startsWith("55") ? digits : `55${digits}`;
+  };
+
+  const handleStartLink = async () => {
+    if (!userId) return;
+    const digits = phoneNumber.replace(/\D/g, "");
+    if (digits.length < 10) {
+      toast({ title: "Número inválido", description: "Digite um número com DDD.", variant: "destructive" });
       return;
     }
 
-    // Poll status every 3s to detect when phone scans QR
-    pollRef.current = setInterval(async () => {
-      try {
-        const data = await callEvolution("status");
-        const state = data?.state || "close";
-        if (state === "open") {
-          setConnectionState("open");
-          setShowQrFlow(false);
-          setQrCode(null);
-          const ownerJid = data?.instance?.owner || data?.owner;
-          if (ownerJid) setPhoneNumber(ownerJid.replace(/@.*/, ""));
-          toast({ title: "WhatsApp conectado!", description: "Seu número foi vinculado com sucesso." });
+    setLoading(true);
+    const code = generateCode();
+    const fullPhone = getCleanPhone(phoneNumber);
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // 30 min
 
-          // Setup webhook after connection
-          try {
-            await callEvolution("setup_webhook");
-          } catch (e) {
-            console.error("Webhook setup failed:", e);
-          }
-        }
-      } catch { /* ignore */ }
-    }, 3000);
+    // Upsert link
+    const { error } = await supabase
+      .from("whatsapp_links")
+      .upsert({
+        user_id: userId,
+        phone_number: fullPhone,
+        verification_code: code,
+        verified: false,
+        expires_at: expiresAt,
+      }, { onConflict: "user_id" });
 
-    // Countdown for QR refresh
-    setQrCountdown(20);
-    countdownRef.current = setInterval(() => {
-      setQrCountdown(prev => {
-        if (prev <= 1) {
-          // Refresh QR
-          refreshQrCode();
-          return 20;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-      if (countdownRef.current) clearInterval(countdownRef.current);
-    };
-  }, [showQrFlow, connectionState, callEvolution, toast]);
-
-  const refreshQrCode = async () => {
-    try {
-      const data = await callEvolution("qrcode");
-      if (data?.base64) {
-        setQrCode(data.base64);
-      } else if (data?.code) {
-        setQrCode(data.code);
-      }
-    } catch { /* ignore */ }
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      setVerificationCode(code);
+      setLinkedPhone(fullPhone);
+      setIsVerified(false);
+      toast({ title: "Código gerado!", description: `Envie "${code}" para o nosso WhatsApp.` });
+    }
+    setLoading(false);
   };
 
-  const startConnection = async () => {
-    setShowQrFlow(true);
-    setLoading(true);
+  const handleCheckVerification = async () => {
+    if (!userId) return;
+    setChecking(true);
+    const { data } = await supabase
+      .from("whatsapp_links")
+      .select("verified")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-    const steps = [...setupSteps];
-    const updateStep = (idx: number, status: SetupStep["status"]) => {
-      steps[idx] = { ...steps[idx], status };
-      setSetupSteps([...steps]);
-    };
+    if (data?.verified) {
+      setIsVerified(true);
+      toast({ title: "WhatsApp vinculado!", description: "Seu número foi verificado com sucesso." });
+    } else {
+      toast({ title: "Ainda não verificado", description: "Envie o código para nosso WhatsApp e tente novamente.", variant: "destructive" });
+    }
+    setChecking(false);
+  };
 
-    try {
-      // Step 1: Check/create instance
-      updateStep(0, "loading");
-      await checkStatus();
-      updateStep(0, "done");
+  const handleUnlink = async () => {
+    if (!userId) return;
+    setUnlinking(true);
+    await supabase.from("whatsapp_links").delete().eq("user_id", userId);
+    setLinkedPhone(null);
+    setVerificationCode(null);
+    setIsVerified(false);
+    setPhoneNumber("");
+    toast({ title: "WhatsApp desvinculado" });
+    setUnlinking(false);
+  };
 
-      // Step 2: Sync
-      updateStep(1, "loading");
-      await new Promise(r => setTimeout(r, 500));
-      updateStep(1, "done");
-
-      // Step 3: Webhook
-      updateStep(2, "loading");
-      try {
-        await callEvolution("setup_webhook");
-      } catch { /* ok if fails */ }
-      updateStep(2, "done");
-
-      // Step 4: QR Code
-      updateStep(3, "loading");
-      const qrData = await callEvolution("qrcode");
-      if (qrData?.base64) {
-        setQrCode(qrData.base64);
-      } else if (qrData?.code) {
-        setQrCode(qrData.code);
-      }
-      updateStep(3, "done");
-    } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
-      const failIdx = steps.findIndex(s => s.status === "loading");
-      if (failIdx >= 0) updateStep(failIdx, "error");
-    } finally {
-      setLoading(false);
+  const copyCode = () => {
+    if (verificationCode) {
+      navigator.clipboard.writeText(verificationCode);
+      toast({ title: "Código copiado!" });
     }
   };
 
-  const handleDisconnect = async () => {
-    setLoading(true);
-    try {
-      await callEvolution("logout");
-      setConnectionState("close");
-      setPhoneNumber(null);
-      setQrCode(null);
-      setShowQrFlow(false);
-      toast({ title: "WhatsApp desconectado" });
-    } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
+  const openWhatsApp = () => {
+    const msg = encodeURIComponent(verificationCode || "");
+    window.open(`https://wa.me/${NOX_PHONE}?text=${msg}`, "_blank");
   };
-
-  const handleRestart = async () => {
-    setLoading(true);
-    try {
-      await callEvolution("restart");
-      toast({ title: "Instância reiniciada", description: "Aguarde alguns segundos..." });
-      setTimeout(checkStatus, 3000);
-    } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatPhone = (phone: string) => {
-    return phone.replace(/(\d{2})(\d{2})(\d{4,5})(\d{4})/, "+$1 ($2) $3-$4");
-  };
-
-  const isConnected = connectionState === "open";
-  const showSetupFlow = showQrFlow && !isConnected;
-  const allStepsDone = setupSteps.every(s => s.status === "done");
 
   return (
     <Card className="p-6">
@@ -226,178 +153,125 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
           </div>
           <div>
             <h2 className="font-semibold text-foreground">WhatsApp</h2>
-            <p className="text-xs text-muted-foreground">Conecte seu WhatsApp para receber e enviar mensagens</p>
+            <p className="text-xs text-muted-foreground">Vincule seu número ao Brave Assessor</p>
           </div>
         </div>
-        {isConnected ? (
-          <div className="flex items-center gap-2">
-            <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 gap-1">
-              <Wifi className="h-3 w-3" /> Conectado
-            </Badge>
-            <Badge variant="outline" className="gap-1 text-xs">
-              <Webhook className="h-3 w-3" /> Webhook
-            </Badge>
-          </div>
-        ) : (
-          <Badge variant="outline" className="text-muted-foreground gap-1">
-            <WifiOff className="h-3 w-3" /> Desconectado
+        {isVerified && (
+          <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 gap-1">
+            <CheckCircle2 className="h-3 w-3" /> Vinculado
           </Badge>
         )}
       </div>
 
-      {/* Connected state */}
-      {isConnected && (
+      {/* Verified / linked state */}
+      {isVerified && linkedPhone && (
         <div className="space-y-4">
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-full bg-[#25D366] flex items-center justify-center">
-                <MessageSquare className="h-5 w-5 text-white" />
+                <Phone className="h-5 w-5 text-white" />
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-foreground text-sm">
-                  {instanceName || "Brave"}
+                <p className="font-semibold text-foreground text-sm">Número vinculado</p>
+                <p className="text-xs text-muted-foreground font-mono">
+                  📞 {linkedPhone.replace(/(\d{2})(\d{2})(\d{4,5})(\d{4})/, "+$1 ($2) $3-$4")}
                 </p>
-                {phoneNumber && (
-                  <p className="text-xs text-muted-foreground font-mono">
-                    📞 {formatPhone(phoneNumber)}
-                  </p>
-                )}
               </div>
               <CheckCircle2 className="h-5 w-5 text-emerald-500" />
             </div>
           </div>
-
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRestart}
-              disabled={loading}
-              className="flex-1 gap-1.5"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Sincronizar
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDisconnect}
-              disabled={loading}
-              className="flex-1 gap-1.5 text-destructive hover:text-destructive"
-            >
-              <Unlink className="h-3.5 w-3.5" />
-              Desconectar
-            </Button>
-          </div>
+          <p className="text-xs text-muted-foreground text-center">
+            Envie mensagens para <strong>{NOX_PHONE_DISPLAY}</strong> para registrar transações pelo WhatsApp.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleUnlink}
+            disabled={unlinking}
+            className="w-full gap-1.5 text-destructive hover:text-destructive"
+          >
+            <Unlink className="h-3.5 w-3.5" />
+            {unlinking ? "Desvinculando..." : "Desvincular número"}
+          </Button>
         </div>
       )}
 
-      {/* Setup flow / QR code */}
-      {showSetupFlow && (
+      {/* Pending verification — code generated */}
+      {!isVerified && verificationCode && linkedPhone && (
         <div className="space-y-4">
-          {/* Steps */}
-          {!allStepsDone && (
-            <div className="bg-accent/50 border border-border rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Settings2 className="h-4 w-4 text-primary animate-spin" />
-                <p className="text-sm font-medium text-foreground">Configurando instância...</p>
-              </div>
-              <div className="space-y-2">
-                {setupSteps.map((step, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    {step.status === "done" && <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />}
-                    {step.status === "loading" && <Loader2 className="h-4 w-4 text-primary animate-spin shrink-0" />}
-                    {step.status === "error" && <XCircle className="h-4 w-4 text-destructive shrink-0" />}
-                    {step.status === "pending" && <div className="h-4 w-4 rounded-full border border-border shrink-0" />}
-                    <span className={step.status === "done" ? "text-muted-foreground" : step.status === "loading" ? "text-foreground font-medium" : "text-muted-foreground"}>
-                      {step.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
+          <div className="bg-accent/50 border border-border rounded-xl p-5 text-center space-y-3">
+            <p className="text-sm font-medium text-foreground">Seu código de verificação:</p>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-2xl font-bold tracking-widest text-primary font-mono">
+                {verificationCode}
+              </span>
+              <Button variant="ghost" size="sm" onClick={copyCode} className="h-8 w-8 p-0">
+                <Copy className="h-4 w-4" />
+              </Button>
             </div>
-          )}
+            <p className="text-xs text-muted-foreground">
+              Envie este código para o número abaixo no WhatsApp:
+            </p>
+            <Button
+              onClick={openWhatsApp}
+              className="w-full gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white"
+            >
+              <MessageSquare className="h-4 w-4" />
+              Enviar para {NOX_PHONE_DISPLAY}
+            </Button>
+          </div>
 
-          {/* QR Code display */}
-          {qrCode && allStepsDone && (
-            <div className="bg-accent/50 border border-border rounded-xl p-6 text-center">
-              <h3 className="font-semibold text-foreground mb-1">Conectar WhatsApp</h3>
-              <p className="text-xs text-muted-foreground mb-4">Escaneie o QR Code com seu WhatsApp para conectar</p>
-
-              <div className="bg-white rounded-xl p-4 inline-block mx-auto">
-                {qrCode.startsWith("data:") ? (
-                  <img src={qrCode} alt="QR Code" className="h-52 w-52" />
-                ) : (
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=208x208&data=${encodeURIComponent(qrCode)}`} alt="QR Code" className="h-52 w-52" />
-                )}
-              </div>
-
-              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <div className="relative h-8 w-8">
-                  <svg className="h-8 w-8 -rotate-90" viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.2" />
-                    <circle
-                      cx="18" cy="18" r="15" fill="none"
-                      stroke="hsl(var(--primary))" strokeWidth="2"
-                      strokeDasharray={`${(qrCountdown / 20) * 94.25} 94.25`}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground">
-                    {qrCountdown}s
-                  </span>
-                </div>
-                <div className="text-left">
-                  <p className="text-xs font-medium text-foreground">Atualiza em {qrCountdown}s</p>
-                  <p className="text-[10px] text-muted-foreground">QR Code será renovado automaticamente</p>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-1 text-xs text-muted-foreground">
-                <p>Abra o WhatsApp no seu celular</p>
-                <p>Vá em Configurações → Dispositivos Conectados</p>
-                <p>Toque em "Conectar um dispositivo"</p>
-              </div>
-
-              <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Aguardando conexão...
-              </div>
-            </div>
-          )}
+          <Button
+            variant="outline"
+            onClick={handleCheckVerification}
+            disabled={checking}
+            className="w-full gap-2"
+          >
+            {checking ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            {checking ? "Verificando..." : "Já enviei o código"}
+          </Button>
 
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => { setShowQrFlow(false); setQrCode(null); }}
-            className="w-full"
+            onClick={() => { setVerificationCode(null); setLinkedPhone(null); }}
+            className="w-full text-muted-foreground"
           >
             Cancelar
           </Button>
         </div>
       )}
 
-      {/* Initial state — not connected, no flow */}
-      {!isConnected && !showSetupFlow && (
+      {/* Initial state — enter phone */}
+      {!isVerified && !verificationCode && (
         <div className="space-y-4">
-          <div className="bg-accent/50 border border-border rounded-xl p-6 text-center">
-            <QrCode className="h-10 w-10 text-primary mx-auto mb-3" />
-            <h3 className="font-semibold text-foreground text-sm">Conecte seu WhatsApp</h3>
+          <div className="bg-accent/50 border border-border rounded-xl p-5 text-center">
+            <Phone className="h-10 w-10 text-primary mx-auto mb-3" />
+            <h3 className="font-semibold text-foreground text-sm">Vincule seu WhatsApp</h3>
             <p className="text-xs text-muted-foreground mt-1 mb-4">
-              Escaneie o QR Code para vincular seu WhatsApp e registrar transações automaticamente.
+              Registre transações enviando mensagens de texto para o nosso assistente.
             </p>
-            <Button
-              onClick={startConnection}
-              disabled={loading}
-              className="w-full gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white"
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <QrCode className="h-4 w-4" />
-              )}
-              {loading ? "Conectando..." : "Nova Conexão"}
-            </Button>
+
+            <div className="space-y-3 text-left">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Seu número com DDD</label>
+                <Input
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(formatPhoneInput(e.target.value))}
+                  placeholder="(00) 00000-0000"
+                  className="mt-1"
+                  maxLength={16}
+                />
+              </div>
+              <Button
+                onClick={handleStartLink}
+                disabled={loading || phoneNumber.replace(/\D/g, "").length < 10}
+                className="w-full gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+                {loading ? "Gerando código..." : "Gerar código de verificação"}
+              </Button>
+            </div>
           </div>
         </div>
       )}
