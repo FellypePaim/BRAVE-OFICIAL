@@ -223,7 +223,7 @@ export default function Wallets() {
           <Card>
             <CardContent className="p-3 md:p-4">
               <div className="flex items-center justify-between">
-                <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10 h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10 h-8 w-8" onClick={handlePrevMonth}><ChevronLeft className="h-4 w-4" /></Button>
                 <div className="text-center">
                   <p className="font-semibold text-foreground text-sm md:text-base">{monthCapitalized}</p>
                   <div className="flex items-center gap-1.5 mt-1.5 justify-center">
@@ -233,7 +233,7 @@ export default function Wallets() {
                   </div>
                   <p className="text-[10px] md:text-xs text-muted-foreground mt-1">{dateRange}</p>
                 </div>
-                <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10 h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10 h-8 w-8" onClick={handleNextMonth}><ChevronRight className="h-4 w-4" /></Button>
               </div>
             </CardContent>
           </Card>

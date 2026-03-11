@@ -328,7 +328,7 @@ export default function Reports() {
                     />
                     <Bar dataKey="total" name="Gasto" radius={[4, 4, 0, 0]}>
                       {categoryData.map((entry, index) => (
-                        <rect key={index} fill={COLORS[index % COLORS.length]} />
+                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Bar>
                   </BarChart>

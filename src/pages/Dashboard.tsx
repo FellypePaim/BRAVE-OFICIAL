@@ -312,7 +312,7 @@ export default function Dashboard() {
       <Card>
         <CardContent className="p-3 md:p-4">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10"><ChevronLeft className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10" onClick={handlePrevMonth}><ChevronLeft className="h-5 w-5" /></Button>
             <div className="text-center">
               <p className="font-semibold text-foreground">{monthCapitalized}</p>
               <div className="flex items-center gap-2 mt-2 justify-center">
@@ -324,7 +324,7 @@ export default function Dashboard() {
               </div>
               <p className="text-xs text-muted-foreground mt-1.5">{getDateRange()}</p>
             </div>
-            <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10"><ChevronRight className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" className="rounded-full text-primary hover:bg-primary/10" onClick={handleNextMonth}><ChevronRight className="h-5 w-5" /></Button>
           </div>
         </CardContent>
       </Card>
