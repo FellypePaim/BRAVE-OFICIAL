@@ -540,6 +540,15 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
+      {/* 50/30/20 Rule Widget */}
+      <BudgetRuleWidget
+        income={receivedIncome}
+        expenses={catEntries.map(([category, amount]) => ({ category, amount }))}
+      />
+
+      {/* AI Spending Forecast */}
+      <SpendingForecast />
+
       {/* Recurrence Suggestions */}
       <RecurrenceSuggestions />
 
