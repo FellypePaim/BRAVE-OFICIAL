@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useWallets } from "@/hooks/useSharedQueries";
 import { AddWalletDialog } from "@/components/AddWalletDialog";
 import { AddTransactionDialog } from "@/components/AddTransactionDialog";
 import { EditWalletDialog } from "@/components/EditWalletDialog";
