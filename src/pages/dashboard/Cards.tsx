@@ -21,10 +21,12 @@ const fmt = (v: number) =>
 
 export default function Cards() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [editCard, setEditCard] = useState<any>(null);
   const [editTransaction, setEditTransaction] = useState<any>(null);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [payCard, setPayCard] = useState<{ id: string; name: string; bill: number } | null>(null);
+  const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
 
   const { data: cards = [] } = useQuery({
     queryKey: ["cards", user?.id],
