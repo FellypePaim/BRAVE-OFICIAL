@@ -172,7 +172,14 @@ export function AppSidebar() {
                         className="flex items-center gap-3 text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
                         activeClassName="text-primary font-medium bg-white/[0.06]"
                       >
-                        <item.icon className="h-4 w-4 shrink-0" />
+                        <div className="relative shrink-0">
+                          <item.icon className="h-4 w-4" />
+                          {item.badge > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center leading-none glow-primary-sm">
+                              {item.badge > 9 ? "9+" : item.badge}
+                            </span>
+                          )}
+                        </div>
                         <span>{item.title}</span>
                       </NavLink>
                     </SidebarMenuButton>
