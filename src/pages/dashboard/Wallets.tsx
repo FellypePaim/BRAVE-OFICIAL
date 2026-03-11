@@ -52,11 +52,24 @@ export default function Wallets() {
 
   const totalBalance = wallets.reduce((sum, w) => sum + Number(w.balance), 0);
   const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
-  const monthName = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const [selMonth, setSelMonth] = useState(now.getMonth());
+  const [selYear, setSelYear] = useState(now.getFullYear());
+
+  const handlePrevMonth = () => {
+    if (selMonth === 0) { setSelMonth(11); setSelYear(y => y - 1); }
+    else setSelMonth(m => m - 1);
+  };
+  const handleNextMonth = () => {
+    if (selMonth === 11) { setSelMonth(0); setSelYear(y => y + 1); }
+    else setSelMonth(m => m + 1);
+  };
+
+  const monthStart = new Date(selYear, selMonth, 1).toISOString().slice(0, 10);
+  const selDate = new Date(selYear, selMonth, 1);
+  const monthName = selDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
   const monthCapitalized = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  const dateRange = `${new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString("pt-BR")} até ${monthEnd.toLocaleDateString("pt-BR")}`;
+  const monthEnd = new Date(selYear, selMonth + 1, 0);
+  const dateRange = `${new Date(selYear, selMonth, 1).toLocaleDateString("pt-BR")} até ${monthEnd.toLocaleDateString("pt-BR")}`;
 
   const monthIncome = transactions.filter((t) => t.type === "income" && t.date >= monthStart).reduce((sum, t) => sum + Number(t.amount), 0);
   const monthExpense = transactions.filter((t) => t.type === "expense" && t.date >= monthStart).reduce((sum, t) => sum + Number(t.amount), 0);
