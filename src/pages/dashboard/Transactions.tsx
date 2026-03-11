@@ -45,14 +45,10 @@ export default function Transactions() {
     return `${format(startOfMonth(currentDate), "dd/MM/yyyy")} até ${format(endOfMonth(currentDate), "dd/MM/yyyy")}`;
   };
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ["categories", user?.id],
-    queryFn: async () => {
-      const { data } = await supabase.from("categories").select("id, name").order("name");
-      return data || [];
-    },
-    enabled: !!user,
-  });
+  const { data: categories = [] } = useCategories();
+
+  const PAGE_SIZE = 50;
+  const [page, setPage] = useState(0);
 
   const { data: transactions = [] } = useQuery({
     queryKey: ["day-transactions", user?.id, range.start, range.end],
