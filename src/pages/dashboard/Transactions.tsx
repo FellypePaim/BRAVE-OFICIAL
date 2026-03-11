@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCategories } from "@/hooks/useSharedQueries";
 import {
   Plus, ChevronLeft, ChevronRight, DollarSign, Pencil, Clock,
   CheckCircle2, AlertTriangle, Check, ArrowUpCircle, ArrowDownCircle, Filter,
@@ -15,6 +16,7 @@ import { AddTransactionDialog } from "@/components/AddTransactionDialog";
 import { EditTransactionDialog } from "@/components/EditTransactionDialog";
 import { ImportExtractDialog } from "@/components/ImportExtractDialog";
 import { useToast } from "@/hooks/use-toast";
+import { ListSkeleton } from "@/components/ui/skeletons";
 
 type Period = "today" | "week" | "month";
 
@@ -43,17 +45,13 @@ export default function Transactions() {
     return `${format(startOfMonth(currentDate), "dd/MM/yyyy")} até ${format(endOfMonth(currentDate), "dd/MM/yyyy")}`;
   };
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ["categories", user?.id],
-    queryFn: async () => {
-      const { data } = await supabase.from("categories").select("id, name").order("name");
-      return data || [];
-    },
-    enabled: !!user,
-  });
+  const { data: categories = [] } = useCategories();
 
-  const { data: transactions = [] } = useQuery({
-    queryKey: ["day-transactions", user?.id, range.start, range.end],
+  const PAGE_SIZE = 50;
+  const [page, setPage] = useState(0);
+
+  const { data: transactions = [], isLoading: loadingTx } = useQuery({
+    queryKey: ["day-transactions", user?.id, range.start, range.end, page],
     queryFn: async () => {
       const { data } = await supabase
         .from("transactions")
@@ -61,7 +59,8 @@ export default function Transactions() {
         .is("recurring_id", null)
         .gte("date", range.start)
         .lte("date", range.end)
-        .order("date", { ascending: false });
+        .order("date", { ascending: false })
+        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
       return data || [];
     },
     enabled: !!user,
@@ -227,7 +226,9 @@ export default function Transactions() {
           </Select>
         </div>
 
-        {filteredTransactions.length === 0 ? (
+        {loadingTx ? (
+          <ListSkeleton count={5} />
+        ) : filteredTransactions.length === 0 ? (
           <div className="text-center py-8 md:py-12 text-muted-foreground">
             <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-blue-100 to-sky-200 dark:from-blue-950/40 dark:to-sky-950/30 flex items-center justify-center mx-auto mb-3 md:mb-4">
               <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-primary" />
@@ -238,6 +239,15 @@ export default function Transactions() {
         ) : (
           <div>
             {filteredTransactions.map(t => renderTransactionItem(t))}
+            <div className="flex items-center justify-between pt-4 mt-2 border-t border-border">
+              <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)} className="text-xs">
+                Anterior
+              </Button>
+              <span className="text-xs text-muted-foreground">Página {page + 1}</span>
+              <Button variant="outline" size="sm" disabled={transactions.length < PAGE_SIZE} onClick={() => setPage(p => p + 1)} className="text-xs">
+                Próxima
+              </Button>
+            </div>
           </div>
         )}
       </Card>

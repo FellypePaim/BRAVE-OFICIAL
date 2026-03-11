@@ -2,11 +2,13 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCategories } from "@/hooks/useSharedQueries";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Plus, Target, Pencil, UtensilsCrossed, ShoppingCart, GraduationCap, Gamepad2, Home, Package, DollarSign, Heart, Car, BookOpen, Shirt, MoreHorizontal, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { EditCategoryDialog } from "@/components/EditCategoryDialog";
+import { CategorySkeleton } from "@/components/ui/skeletons";
 
 const iconMap: Record<string, React.ElementType> = {
   utensils: UtensilsCrossed, shopping: ShoppingCart, education: GraduationCap, gamepad: Gamepad2,
@@ -37,15 +39,7 @@ export default function Categories() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ["categories", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("categories").select("*").eq("user_id", user!.id).order("name");
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user,
-  });
+  const { data: categories = [], isLoading: loadingCats } = useCategories();
 
   const { data: monthTransactions = [] } = useQuery({
     queryKey: ["categories-month-tx", user?.id, monthStart],
@@ -123,6 +117,11 @@ export default function Categories() {
         </div>
       )}
 
+      {loadingCats ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+          {[1, 2, 3, 4, 5, 6].map(i => <CategorySkeleton key={i} />)}
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {categories.map((cat, i) => {
           const IconComp = iconMap[cat.icon || ""] || Package;
@@ -201,6 +200,7 @@ export default function Categories() {
           </div>
         )}
       </div>
+      )}
 
       <EditCategoryDialog category={editCategory} open={!!editCategory || showNew} onOpenChange={(o) => { if (!o) { setEditCategory(null); setShowNew(false); } }} />
     </div>

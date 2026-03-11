@@ -1,27 +1,32 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Pencil, AlertTriangle, CalendarDays, Wifi, ChevronDown, ChevronUp, Banknote } from "lucide-react";
+import { CreditCard, Pencil, AlertTriangle, CalendarDays, Wifi, ChevronDown, ChevronUp, Banknote, Trash2 } from "lucide-react";
 import { AddCardDialog } from "@/components/AddCardDialog";
 import { EditCardDialog } from "@/components/EditCardDialog";
 import { EditTransactionDialog } from "@/components/EditTransactionDialog";
 import { PayInvoiceDialog } from "@/components/PayInvoiceDialog";
+import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
+import { CardSkeleton } from "@/components/ui/skeletons";
 import { Progress } from "@/components/ui/progress";
+import { toast } from "sonner";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export default function Cards() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [editCard, setEditCard] = useState<any>(null);
   const [editTransaction, setEditTransaction] = useState<any>(null);
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const [payCard, setPayCard] = useState<{ id: string; name: string; bill: number } | null>(null);
+  const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
 
-  const { data: cards = [] } = useQuery({
+  const { data: cards = [], isLoading: loadingCards } = useQuery({
     queryKey: ["cards", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -34,6 +39,18 @@ export default function Cards() {
     },
     enabled: !!user,
   });
+
+  const handleDeleteCard = async () => {
+    if (!deleteCardId) return;
+    const { error } = await supabase.from("cards").delete().eq("id", deleteCardId);
+    if (error) {
+      toast.error("Erro ao excluir cartão", { description: error.message });
+    } else {
+      toast.success("Cartão removido");
+      queryClient.invalidateQueries({ queryKey: ["cards"] });
+    }
+    setDeleteCardId(null);
+  };
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
@@ -114,7 +131,11 @@ export default function Cards() {
         </Card>
       )}
 
-      {cards.length === 0 ? (
+      {loadingCards ? (
+        <div className="space-y-4 md:space-y-6">
+          {[1, 2].map(i => <CardSkeleton key={i} />)}
+        </div>
+      ) : cards.length === 0 ? (
         <Card className="p-4 md:p-6">
           <div className="text-center py-8 md:py-12 text-muted-foreground">
             <CreditCard className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 opacity-40" />
@@ -241,6 +262,14 @@ export default function Cards() {
                         {transactions.length} transaç{transactions.length === 1 ? "ão" : "ões"}
                       </Button>
                     )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 md:h-10 rounded-xl text-muted-foreground hover:text-destructive"
+                      onClick={(e) => { e.stopPropagation(); setDeleteCardId(card.id); }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    </Button>
                   </div>
 
                   {isExpanded && transactions.length > 0 && (
@@ -284,6 +313,13 @@ export default function Cards() {
           onOpenChange={(o) => !o && setPayCard(null)}
         />
       )}
+      <ConfirmDeleteDialog
+        open={!!deleteCardId}
+        onOpenChange={(o) => !o && setDeleteCardId(null)}
+        onConfirm={handleDeleteCard}
+        title="Excluir cartão?"
+        description="O cartão e suas informações serão removidos. Transações existentes não serão afetadas."
+      />
     </div>
   );
 }

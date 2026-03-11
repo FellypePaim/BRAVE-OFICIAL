@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, DollarSign, BarChart3, RefreshCw, Bitcoin, Landmark, BarChart2, Receipt, Trash2 } from "lucide-react";
 import { AddInvestmentDialog } from "@/components/AddInvestmentDialog";
+import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
+import { InvestmentSkeleton } from "@/components/ui/skeletons";
 import { toast } from "sonner";
 
 interface MarketItem {
@@ -44,6 +46,7 @@ const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", curren
 export default function Investments() {
   const { user } = useAuth();
   const [secondsAgo, setSecondsAgo] = useState(0);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: marketResult, refetch, isFetching: isFetchingMarket } = useQuery({
     queryKey: ["market-data"],
@@ -56,7 +59,7 @@ export default function Investments() {
     staleTime: 25000,
   });
 
-  const { data: investments = [], refetch: refetchInvestments } = useQuery({
+  const { data: investments = [], refetch: refetchInvestments, isLoading: loadingInv } = useQuery({
     queryKey: ["investments", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -88,14 +91,16 @@ export default function Investments() {
   const totalReturn = totalCurrent - totalInvested;
   const returnPct = totalInvested > 0 ? (totalReturn / totalInvested) * 100 : 0;
 
-  const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("investments").delete().eq("id", id);
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    const { error } = await supabase.from("investments").delete().eq("id", deleteId);
     if (error) {
       toast.error("Erro ao excluir", { description: error.message });
     } else {
       toast.success("Investimento removido");
       refetchInvestments();
     }
+    setDeleteId(null);
   };
 
   return (
@@ -189,7 +194,11 @@ export default function Investments() {
       {/* Investments List */}
       <Card className="p-6">
         <h2 className="font-bold text-foreground mb-6">Seus Investimentos</h2>
-        {investments.length === 0 ? (
+        {loadingInv ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map(i => <InvestmentSkeleton key={i} />)}
+          </div>
+        ) : investments.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <p className="font-medium">Nenhum investimento cadastrado</p>
             <AddInvestmentDialog trigger={
@@ -219,7 +228,7 @@ export default function Investments() {
                       </p>
                     </div>
                     <button
-                      onClick={() => handleDelete(inv.id)}
+                      onClick={() => setDeleteId(inv.id)}
                       className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all p-1"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -231,6 +240,14 @@ export default function Investments() {
           </div>
         )}
       </Card>
+
+      <ConfirmDeleteDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Excluir investimento?"
+        description="O investimento será removido permanentemente."
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { Plus, Target, Calculator, AlertCircle, Pencil, PlusCircle, Check, X } f
 import { useToast } from "@/hooks/use-toast";
 import { addMonths, format } from "date-fns";
 import { EditGoalDialog } from "@/components/EditGoalDialog";
+import { GoalSkeleton } from "@/components/ui/skeletons";
 
 export default function Goals() {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ export default function Goals() {
   const [depositGoalId, setDepositGoalId] = useState<string | null>(null);
   const [depositAmount, setDepositAmount] = useState("");
 
-  const { data: goals = [] } = useQuery({
+  const { data: goals = [], isLoading: loadingGoals } = useQuery({
     queryKey: ["goals", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -175,7 +176,11 @@ export default function Goals() {
       </div>
 
       <Card className="p-3 md:p-6">
-        {goals.length === 0 ? (
+        {loadingGoals ? (
+          <div className="space-y-3 md:space-y-4">
+            {[1, 2, 3].map(i => <GoalSkeleton key={i} />)}
+          </div>
+        ) : goals.length === 0 ? (
           <div className="text-center py-8 md:py-12 text-muted-foreground">
             <Target className="h-10 w-10 md:h-12 md:w-12 mx-auto mb-3 opacity-40" />
             <p className="font-medium text-foreground text-sm">Nenhuma meta ativa</p>
