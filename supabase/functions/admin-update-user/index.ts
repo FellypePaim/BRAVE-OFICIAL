@@ -81,6 +81,7 @@ Deno.serve(async (req) => {
       subscription_expires_at,
       display_name,
       monthly_income,
+      cpf_cnpj,
     } = await req.json();
 
     if (!userId) {
