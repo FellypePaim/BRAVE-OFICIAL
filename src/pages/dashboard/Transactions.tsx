@@ -226,7 +226,9 @@ export default function Transactions() {
           </Select>
         </div>
 
-        {filteredTransactions.length === 0 ? (
+        {loadingTx ? (
+          <ListSkeleton count={5} />
+        ) : filteredTransactions.length === 0 ? (
           <div className="text-center py-8 md:py-12 text-muted-foreground">
             <div className="h-12 w-12 md:h-16 md:w-16 rounded-2xl bg-gradient-to-br from-blue-100 to-sky-200 dark:from-blue-950/40 dark:to-sky-950/30 flex items-center justify-center mx-auto mb-3 md:mb-4">
               <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-primary" />
@@ -237,6 +239,15 @@ export default function Transactions() {
         ) : (
           <div>
             {filteredTransactions.map(t => renderTransactionItem(t))}
+            <div className="flex items-center justify-between pt-4 mt-2 border-t border-border">
+              <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(p => p - 1)} className="text-xs">
+                Anterior
+              </Button>
+              <span className="text-xs text-muted-foreground">Página {page + 1}</span>
+              <Button variant="outline" size="sm" disabled={transactions.length < PAGE_SIZE} onClick={() => setPage(p => p + 1)} className="text-xs">
+                Próxima
+              </Button>
+            </div>
           </div>
         )}
       </Card>
