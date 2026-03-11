@@ -158,8 +158,11 @@ export function PayInvoiceDialog({ cardId, cardName, billAmount, open, onOpenCha
               disabled={saving || !walletId || payAmount <= 0 || (selectedWallet ? Number(selectedWallet.balance) < payAmount : true)}
               className="flex-1 h-11 rounded-2xl font-semibold shadow-lg shadow-primary/20 gap-2"
             >
-              <CheckCircle2 className="h-4 w-4" />
-              {saving ? "Pagando..." : "Pagar"}
+              {saving ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Pagando...</>
+              ) : (
+                <><CheckCircle2 className="h-4 w-4" /> Pagar</>
+              )}
             </Button>
           </div>
         </div>
