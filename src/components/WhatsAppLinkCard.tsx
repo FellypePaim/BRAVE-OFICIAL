@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -25,7 +24,6 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
   const [checking, setChecking] = useState(false);
   const [unlinking, setUnlinking] = useState(false);
 
-  // Fetch existing link
   useEffect(() => {
     if (!userId) return;
     const fetchLink = async () => {
@@ -52,37 +50,16 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
     return code;
   };
 
-  const formatPhoneInput = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-  };
-
-  const getCleanPhone = (phone: string) => {
-    const digits = phone.replace(/\D/g, "");
-    return digits.startsWith("55") ? digits : `55${digits}`;
-  };
-
-  const handleStartLink = async () => {
+  const handleGenerateCode = async () => {
     if (!userId) return;
-    const digits = phoneNumber.replace(/\D/g, "");
-    if (digits.length < 10) {
-      toast({ title: "Número inválido", description: "Digite um número com DDD.", variant: "destructive" });
-      return;
-    }
-
     setLoading(true);
     const code = generateCode();
-    const fullPhone = getCleanPhone(phoneNumber);
-    const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // 30 min
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString();
 
-    // Upsert link
     const { error } = await supabase
       .from("whatsapp_links")
       .upsert({
         user_id: userId,
-        phone_number: fullPhone,
         verification_code: code,
         verified: false,
         expires_at: expiresAt,
@@ -92,7 +69,6 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       setVerificationCode(code);
-      setLinkedPhone(fullPhone);
       setIsVerified(false);
       toast({ title: "Código gerado!", description: `Envie "${code}" para o nosso WhatsApp.` });
     }
@@ -104,12 +80,13 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
     setChecking(true);
     const { data } = await supabase
       .from("whatsapp_links")
-      .select("verified")
+      .select("verified, phone_number")
       .eq("user_id", userId)
       .maybeSingle();
 
     if (data?.verified) {
       setIsVerified(true);
+      setLinkedPhone(data.phone_number);
       toast({ title: "WhatsApp vinculado!", description: "Seu número foi verificado com sucesso." });
     } else {
       toast({ title: "Ainda não verificado", description: "Envie o código para nosso WhatsApp e tente novamente.", variant: "destructive" });
@@ -124,7 +101,6 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
     setLinkedPhone(null);
     setVerificationCode(null);
     setIsVerified(false);
-    setPhoneNumber("");
     toast({ title: "WhatsApp desvinculado" });
     setUnlinking(false);
   };
@@ -161,7 +137,7 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
         )}
       </div>
 
-      {/* Verified / linked state */}
+      {/* Verified state */}
       {isVerified && linkedPhone && (
         <div className="space-y-4">
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
@@ -195,7 +171,7 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
       )}
 
       {/* Pending verification — code generated */}
-      {!isVerified && verificationCode && linkedPhone && (
+      {!isVerified && verificationCode && (
         <div className="space-y-4">
           <div className="bg-accent/50 border border-border rounded-xl p-5 text-center space-y-3">
             <p className="text-sm font-medium text-foreground">Seu código de verificação:</p>
@@ -215,7 +191,7 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
               className="w-full gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white"
             >
               <MessageSquare className="h-4 w-4" />
-              Enviar para {NOX_PHONE_DISPLAY}
+              Vincular meu WhatsApp ao Brave
             </Button>
           </div>
 
@@ -232,7 +208,7 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => { setVerificationCode(null); setLinkedPhone(null); }}
+            onClick={() => { setVerificationCode(null); }}
             className="w-full text-muted-foreground"
           >
             Cancelar
@@ -240,7 +216,7 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
         </div>
       )}
 
-      {/* Initial state — enter phone */}
+      {/* Initial state — no phone input, just generate code */}
       {!isVerified && !verificationCode && (
         <div className="space-y-4">
           <div className="bg-accent/50 border border-border rounded-xl p-5 text-center">
@@ -249,27 +225,14 @@ export default function WhatsAppLinkCard({ userId }: WhatsAppLinkCardProps) {
             <p className="text-xs text-muted-foreground mt-1 mb-4">
               Registre transações enviando mensagens de texto para o nosso assistente.
             </p>
-
-            <div className="space-y-3 text-left">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground">Seu número com DDD</label>
-                <Input
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(formatPhoneInput(e.target.value))}
-                  placeholder="(00) 00000-0000"
-                  className="mt-1"
-                  maxLength={16}
-                />
-              </div>
-              <Button
-                onClick={handleStartLink}
-                disabled={loading || phoneNumber.replace(/\D/g, "").length < 10}
-                className="w-full gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
-                {loading ? "Gerando código..." : "Gerar código de verificação"}
-              </Button>
-            </div>
+            <Button
+              onClick={handleGenerateCode}
+              disabled={loading}
+              className="w-full gap-2 bg-[#25D366] hover:bg-[#1ebe5d] text-white"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+              {loading ? "Gerando código..." : "Vincular meu WhatsApp ao Brave"}
+            </Button>
           </div>
         </div>
       )}
