@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, DollarSign, BarChart3, RefreshCw, Bitcoin, Landmark, BarChart2, Receipt, Trash2 } from "lucide-react";
 import { AddInvestmentDialog } from "@/components/AddInvestmentDialog";
+import { ConfirmDeleteDialog } from "@/components/ConfirmDeleteDialog";
+import { InvestmentSkeleton } from "@/components/ui/skeletons";
 import { toast } from "sonner";
 
 interface MarketItem {
