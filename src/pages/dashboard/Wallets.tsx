@@ -65,8 +65,9 @@ export default function Wallets() {
   const monthEnd = new Date(selYear, selMonth + 1, 0);
   const dateRange = `${new Date(selYear, selMonth, 1).toLocaleDateString("pt-BR")} até ${monthEnd.toLocaleDateString("pt-BR")}`;
 
-  const monthIncome = transactions.filter((t) => t.type === "income" && t.date >= monthStart).reduce((sum, t) => sum + Number(t.amount), 0);
-  const monthExpense = transactions.filter((t) => t.type === "expense" && t.date >= monthStart).reduce((sum, t) => sum + Number(t.amount), 0);
+  const monthEndStr = monthEnd.toISOString().slice(0, 10);
+  const monthIncome = transactions.filter((t) => t.type === "income" && t.date >= monthStart && t.date <= monthEndStr).reduce((sum, t) => sum + Number(t.amount), 0);
+  const monthExpense = transactions.filter((t) => t.type === "expense" && t.date >= monthStart && t.date <= monthEndStr).reduce((sum, t) => sum + Number(t.amount), 0);
 
   const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
