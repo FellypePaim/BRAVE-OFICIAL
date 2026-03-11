@@ -39,15 +39,7 @@ export default function Categories() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
 
-  const { data: categories = [] } = useQuery({
-    queryKey: ["categories", user?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("categories").select("*").eq("user_id", user!.id).order("name");
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!user,
-  });
+  const { data: categories = [], isLoading: loadingCats } = useCategories();
 
   const { data: monthTransactions = [] } = useQuery({
     queryKey: ["categories-month-tx", user?.id, monthStart],
