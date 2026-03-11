@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  LayoutDashboard, Wallet, CalendarCheck, Sparkles, MoreHorizontal,
+  LayoutDashboard, Wallet, CalendarCheck, Sparkles, MoreHorizontal, CalendarDays,
   CreditCard, Tag, Target, TrendingUp, Brain, FileText,
   HeadphonesIcon, Settings, X, Users, Bell, ShieldCheck, ArrowLeftRight, Trophy,
 } from "lucide-react";
