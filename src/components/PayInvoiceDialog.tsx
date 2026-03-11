@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Landmark, CheckCircle2 } from "lucide-react";
+import { Landmark, CheckCircle2, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -158,8 +158,11 @@ export function PayInvoiceDialog({ cardId, cardName, billAmount, open, onOpenCha
               disabled={saving || !walletId || payAmount <= 0 || (selectedWallet ? Number(selectedWallet.balance) < payAmount : true)}
               className="flex-1 h-11 rounded-2xl font-semibold shadow-lg shadow-primary/20 gap-2"
             >
-              <CheckCircle2 className="h-4 w-4" />
-              {saving ? "Pagando..." : "Pagar"}
+              {saving ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Pagando...</>
+              ) : (
+                <><CheckCircle2 className="h-4 w-4" /> Pagar</>
+              )}
             </Button>
           </div>
         </div>
