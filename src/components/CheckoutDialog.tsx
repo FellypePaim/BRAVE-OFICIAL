@@ -129,9 +129,12 @@ export default function CheckoutDialog({
     setErrorMsg("");
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { plan, billingType: "BOLETO" },
+        body: { plan, billingType: "BOLETO", cpfCnpj: cpfCnpj.replace(/\D/g, "") || undefined },
       });
-      if (error) throw new Error(error.message);
+      if (error) {
+        const errBody = typeof error === "object" && error.message ? error.message : String(error);
+        throw new Error(errBody);
+      }
       if (data?.error) throw new Error(data.error);
 
       setBoletoBarCode(data.boletoBarCode || "");
