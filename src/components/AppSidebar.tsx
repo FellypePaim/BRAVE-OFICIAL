@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useGamification } from "@/hooks/useGamification";
+import { useUnreadSupport } from "@/hooks/useUnreadSupport";
 
 export function AppSidebar() {
   const { signOut, user } = useAuth();
@@ -31,6 +32,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
   const { xp, level, levelTitle, streak } = useGamification();
+  const { unreadCount: unreadSupport } = useUnreadSupport();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
@@ -76,13 +78,13 @@ export function AppSidebar() {
     { title: "Gamificação", url: "/dashboard/gamification", icon: Trophy, badge: 0 },
     { title: "Comportamento", url: "/dashboard/behavior", icon: Brain, badge: 0 },
     { title: "Relatórios", url: "/dashboard/reports", icon: FileText, badge: 0 },
-    { title: "Suporte", url: "/dashboard/chat", icon: HeadphonesIcon, badge: 0 },
+    { title: "Suporte", url: "/dashboard/chat", icon: HeadphonesIcon, badge: unreadSupport },
     { title: "Configurações", url: "/dashboard/settings", icon: Settings, badge: 0 },
   ];
 
   const adminItems = [
-    { title: "Atendimentos", url: "/dashboard/admin/support", icon: HeadphonesIcon },
-    { title: "Usuários", url: "/dashboard/admin/users", icon: Users },
+    { title: "Atendimentos", url: "/dashboard/admin/support", icon: HeadphonesIcon, badge: isAdmin ? unreadSupport : 0 },
+    { title: "Usuários", url: "/dashboard/admin/users", icon: Users, badge: 0 },
   ];
 
   const handleSignOut = async () => {
@@ -170,7 +172,14 @@ export function AppSidebar() {
                         className="flex items-center gap-3 text-muted-foreground hover:text-foreground hover:bg-white/[0.04] transition-colors"
                         activeClassName="text-primary font-medium bg-white/[0.06]"
                       >
-                        <item.icon className="h-4 w-4 shrink-0" />
+                        <div className="relative shrink-0">
+                          <item.icon className="h-4 w-4" />
+                          {item.badge > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center leading-none glow-primary-sm">
+                              {item.badge > 9 ? "9+" : item.badge}
+                            </span>
+                          )}
+                        </div>
                         <span>{item.title}</span>
                       </NavLink>
                     </SidebarMenuButton>

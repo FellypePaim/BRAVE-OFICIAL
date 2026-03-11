@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useUnreadSupport } from "@/hooks/useUnreadSupport";
 
 const tabs = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Início", end: true },
@@ -30,12 +31,12 @@ const moreItems = [
   { to: "/dashboard/gamification", icon: Trophy, label: "Gamificação" },
   { to: "/dashboard/behavior", icon: Brain, label: "Comportamento" },
   { to: "/dashboard/reports", icon: FileText, label: "Relatórios" },
-  { to: "/dashboard/chat", icon: HeadphonesIcon, label: "Suporte" },
+  { to: "/dashboard/chat", icon: HeadphonesIcon, label: "Suporte", supportBadge: true },
   { to: "/dashboard/settings", icon: Settings, label: "Configurações" },
 ];
 
 const adminItems = [
-  { to: "/dashboard/admin/support", icon: HeadphonesIcon, label: "Atendimentos" },
+  { to: "/dashboard/admin/support", icon: HeadphonesIcon, label: "Atendimentos", supportBadge: true },
   { to: "/dashboard/admin/users", icon: Users, label: "Usuários" },
 ];
 
@@ -43,6 +44,7 @@ export function MobileBottomNav() {
   const [showMore, setShowMore] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { unreadCount: unreadSupport } = useUnreadSupport();
 
   const { data: reminderCount = 0 } = useQuery({
     queryKey: ["reminders-count", user?.id],
@@ -109,6 +111,11 @@ export function MobileBottomNav() {
                           {reminderCount > 9 ? "9+" : reminderCount}
                         </span>
                       )}
+                      {(item as any).supportBadge && unreadSupport > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center leading-none">
+                          {unreadSupport > 9 ? "9+" : unreadSupport}
+                        </span>
+                      )}
                     </div>
                     <span className="text-[10px] font-medium leading-tight text-center">{item.label}</span>
                   </NavLink>
@@ -135,7 +142,14 @@ export function MobileBottomNav() {
                           )
                         }
                       >
-                        <item.icon className="h-5 w-5" />
+                        <div className="relative">
+                          <item.icon className="h-5 w-5" />
+                          {(item as any).supportBadge && unreadSupport > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 h-3.5 w-3.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center leading-none">
+                              {unreadSupport > 9 ? "9+" : unreadSupport}
+                            </span>
+                          )}
+                        </div>
                         <span className="text-[10px] font-medium leading-tight text-center">{item.label}</span>
                       </NavLink>
                     ))}
@@ -189,9 +203,9 @@ export function MobileBottomNav() {
           >
             <div className="flex items-center justify-center w-10 h-8 rounded-full relative">
               <MoreHorizontal className="h-5 w-5" />
-              {reminderCount > 0 && (
+              {(reminderCount > 0 || unreadSupport > 0) && (
                 <span className="absolute top-0.5 right-0.5 h-3 w-3 rounded-full bg-primary text-primary-foreground text-[8px] font-bold flex items-center justify-center leading-none">
-                  {reminderCount > 9 ? "9+" : reminderCount}
+                  {(reminderCount + unreadSupport) > 9 ? "9+" : (reminderCount + unreadSupport)}
                 </span>
               )}
             </div>
