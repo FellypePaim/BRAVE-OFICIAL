@@ -313,11 +313,26 @@ export default function Reports() {
               <SelectContent>{[2024, 2025, 2026].map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-1.5 md:gap-2 border border-border rounded-lg px-2.5 md:px-3 py-1.5 md:py-2 text-xs md:text-sm text-muted-foreground">
-            <Send className="h-3.5 w-3.5 md:h-4 md:w-4" />
+          <button
+            onClick={() => {
+              const next = !sendWhatsApp;
+              setSendWhatsApp(next);
+              if (next) handleSendWhatsAppReport();
+            }}
+            disabled={sendingWhatsApp}
+            className={`flex items-center gap-1.5 md:gap-2 border rounded-lg px-2.5 md:px-3 py-1.5 md:py-2 text-xs md:text-sm transition-colors ${
+              sendWhatsApp
+                ? "border-emerald-500 bg-emerald-500/10 text-emerald-600"
+                : "border-border text-muted-foreground hover:border-emerald-500/50"
+            }`}
+          >
+            {sendingWhatsApp ? (
+              <Loader2 className="h-3.5 w-3.5 md:h-4 md:w-4 animate-spin" />
+            ) : (
+              <Send className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            )}
             <span className="whitespace-nowrap hidden sm:inline">WhatsApp</span>
-            <Switch checked={sendWhatsApp} onCheckedChange={setSendWhatsApp} />
-          </div>
+          </button>
         </div>
       </Card>
 
