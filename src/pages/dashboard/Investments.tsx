@@ -59,7 +59,7 @@ export default function Investments() {
     staleTime: 25000,
   });
 
-  const { data: investments = [], refetch: refetchInvestments } = useQuery({
+  const { data: investments = [], refetch: refetchInvestments, isLoading: loadingInv } = useQuery({
     queryKey: ["investments", user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
