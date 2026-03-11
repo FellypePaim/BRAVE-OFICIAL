@@ -32,6 +32,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Usuário";
   const { xp, level, levelTitle, streak } = useGamification();
+  const { unreadCount: unreadSupport } = useUnreadSupport();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],
