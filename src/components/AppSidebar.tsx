@@ -1,6 +1,6 @@
 const braveLogoIcon = "/brave-icon.png";
 import {
-  LayoutDashboard, Wallet, Tag, CreditCard, CalendarCheck,
+  LayoutDashboard, Wallet, Tag, CreditCard, CalendarCheck, CalendarDays,
   Target, TrendingUp, Brain, FileText, HeadphonesIcon,
   Settings, LogOut, Sparkles, ShieldCheck, Users, Bell, ArrowLeftRight, Trophy,
   Flame
