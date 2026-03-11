@@ -14,6 +14,7 @@ import { AddWalletDialog } from "@/components/AddWalletDialog";
 import { AddTransactionDialog } from "@/components/AddTransactionDialog";
 import { EditWalletDialog } from "@/components/EditWalletDialog";
 import { EditTransactionDialog } from "@/components/EditTransactionDialog";
+import { TransferDialog } from "@/components/TransferDialog";
 
 type Tab = "overview" | "transactions" | "accounts";
 type Period = "today" | "week" | "month";
