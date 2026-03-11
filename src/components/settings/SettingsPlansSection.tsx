@@ -221,10 +221,10 @@ export function SettingsPlansSection({ plan, subscriptionExpiresAt }: Props) {
         <CheckoutDialog
           open={!!checkoutPlan}
           onOpenChange={(o) => !o && setCheckoutPlan(null)}
+          plan={checkoutPlan}
           planName={getCheckoutDetails().name}
           planPrice={getCheckoutDetails().price}
-          billingCycle={checkoutPlan}
-          value={getCheckoutDetails().value}
+          planValue={getCheckoutDetails().value}
         />
       )}
     </>
