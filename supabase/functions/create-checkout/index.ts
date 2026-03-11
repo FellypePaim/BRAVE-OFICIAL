@@ -95,6 +95,10 @@ serve(async (req) => {
       if (profile?.cpf_cnpj) cpfCnpj = profile.cpf_cnpj;
     }
 
+    if (!cpfCnpj) {
+      throw new Error("CPF/CNPJ é obrigatório para gerar cobranças. Informe seu CPF no checkout ou em Configurações.");
+    }
+
     const asaasKey = Deno.env.get("ASAAS_API_KEY");
     if (!asaasKey) throw new Error("ASAAS_API_KEY não configurada");
 
@@ -189,9 +193,10 @@ serve(async (req) => {
     });
   } catch (error: any) {
     console.error("create-checkout error:", error.message);
+    const isValidation = error.message?.includes("CPF") || error.message?.includes("obrigatório");
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: isValidation ? 400 : 500,
     });
   }
 });
