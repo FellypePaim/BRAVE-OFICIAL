@@ -13,6 +13,8 @@ import { useGamification } from "@/hooks/useGamification";
 import { AchievementPopup, LevelUpPopup } from "@/components/AchievementPopup";
 import { GlassBackground } from "@/components/GlassBackground";
 import { useTheme } from "next-themes";
+import { useOfflineSync } from "@/hooks/useOfflineSync";
+import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 
 export default function DashboardLayout() {
   const {
@@ -21,6 +23,10 @@ export default function DashboardLayout() {
   } = useGamification();
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
+
+  // Offline sync & realtime notifications
+  useOfflineSync();
+  useRealtimeNotifications();
 
   return (
     <SidebarProvider>
